@@ -1,4 +1,5 @@
-# Every repository on the joclegg account. Each was made by hand and imported.
+# Every repository on the joclegg account. The first 8 were made by hand and
+# imported; add a new one here and Terraform creates it.
 
 locals {
   repositories = {
@@ -38,14 +39,14 @@ locals {
       required_checks        = ["build-and-test"]
       pages                  = { build_type = "workflow" }
     }
+    "terraform-test" = {
+      description = "Test repository created by Terraform from puzzles-infra"
+    }
     "joclegg.github.io" = {
       description = "Root of joclegg.github.io"
       pages       = { build_type = "legacy" }
     }
   }
-
-  with_pages = { for name, repo in local.repositories : name => repo if lookup(repo, "pages", null) != null }
-  protected  = { for name, repo in local.repositories : name => repo if lookup(repo, "required_checks", null) != null }
 }
 
 module "repository" {
@@ -61,20 +62,3 @@ module "repository" {
   pages                  = lookup(each.value, "pages", null)
 }
 
-import {
-  for_each = local.repositories
-  to       = module.repository[each.key].github_repository.this
-  id       = each.key
-}
-
-import {
-  for_each = local.protected
-  to       = module.repository[each.key].github_branch_protection.main[0]
-  id       = "${each.key}:main"
-}
-
-import {
-  for_each = local.with_pages
-  to       = module.repository[each.key].github_repository_pages.this[0]
-  id       = each.key
-}
