@@ -69,6 +69,18 @@ resource "tfe_workspace" "folder" {
   }
 }
 
+# puzzles-github was created by an early `terraform init` in github/, so it's
+# imported rather than created.
+import {
+  to = tfe_workspace.folder["github"]
+  id = "joclegg/puzzles-github"
+}
+
+import {
+  to = tfe_workspace_settings.folder["github"]
+  id = "joclegg/puzzles-github"
+}
+
 resource "tfe_workspace_settings" "folder" {
   for_each = local.workspaces
 
