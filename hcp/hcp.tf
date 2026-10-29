@@ -35,9 +35,11 @@ resource "tfe_workspace_settings" "hcp" {
 # One workspace per folder. Local execution, like joclegg-hcp.
 locals {
   workspaces = {
-    azure    = "The Microsoft Entra ID app registrations, from azure/ in joclegg/joclegg-infra."
-    github   = "Every repository on the joclegg GitHub account, from github/ in joclegg/joclegg-infra."
-    supabase = "The Puzzles Supabase project and its auth settings, from supabase/ in joclegg/joclegg-infra."
+    azure      = "The Microsoft Entra ID app registrations, from azure/ in joclegg/joclegg-infra."
+    cloudflare = "The joclegg.dev domain's DNS on Cloudflare, from cloudflare/ in joclegg/joclegg-infra."
+    github     = "Every repository on the joclegg GitHub account, from github/ in joclegg/joclegg-infra."
+    mailgun    = "Sending email from joclegg.dev through Mailgun, from mailgun/ in joclegg/joclegg-infra."
+    supabase   = "The Puzzles Supabase project and its auth settings, from supabase/ in joclegg/joclegg-infra."
   }
 }
 
