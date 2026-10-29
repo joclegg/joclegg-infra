@@ -1,0 +1,105 @@
+name: Terraform
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One run at a time, so an apply never races a plan for a state lock.
+concurrency:
+  group: terraform
+  cancel-in-progress: false
+
+jobs:
+  # Each top-level folder with a versions.tf is its own root and workspace.
+  # Only changed roots run, unless modules/ or this workflow changed, or the
+  # run was started by hand.
+  roots:
+    runs-on: ubuntu-latest
+    outputs:
+      roots: ${{ steps.find.outputs.roots }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: find
+        shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          all=$(ls -d */versions.tf 2>/dev/null | xargs -n1 dirname | grep -vx modules || true)
+          if [ "$EVENT" = workflow_dispatch ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            roots=$all
+          else
+            changed=$(git diff --name-only "$BASE" HEAD)
+            if grep -qE '^(modules/|\.github/workflows/terraform\.yml$)' <<<"$changed"; then
+              roots=$all
+            else
+              roots=$(for r in $all; do grep -q "^$r/" <<<"$changed" && echo "$r"; done || true)
+            fi
+          fi
+          echo "roots=$(jq -cn '$ARGS.positional' --args $roots)" >> "$GITHUB_OUTPUT"
+          echo "Roots: ${roots:-none}"
+
+  plan-apply:
+    needs: roots
+    if: needs.roots.outputs.roots != '[]'
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        root: ${{ fromJSON(needs.roots.outputs.roots) }}
+    name: ${{ matrix.root }}
+    runs-on: ubuntu-latest
+    env:
+      TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
+      TFE_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      TF_IN_AUTOMATION: 'true'
+    defaults:
+      run:
+        # Explicit bash adds pipefail, so a failing plan isn't hidden by tee.
+        shell: bash
+        working-directory: ${{ matrix.root }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.17.1
+          terraform_wrapper: false
+      - name: Check formatting
+        run: terraform fmt -check -recursive
+      - name: Init
+        run: terraform init -input=false
+      - name: Validate
+        run: terraform validate
+      - name: Plan
+        run: |
+          terraform plan -input=false -no-color -out=tfplan | tee plan.txt
+          {
+            echo "## Terraform plan: ${{ matrix.root }}"
+            echo '```'
+            cat plan.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Apply
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: terraform apply -input=false tfplan
+
+  # The one check for branch protection to require, whichever roots ran.
+  terraform:
+    needs: [roots, plan-apply]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        env:
+          ROOTS: ${{ needs.roots.result }}
+          RUNS: ${{ needs.plan-apply.result }}
+        run: |
+          echo "roots: $ROOTS, plan-apply: $RUNS"
+          [ "$ROOTS" = success ] && { [ "$RUNS" = success ] || [ "$RUNS" = skipped ]; }
