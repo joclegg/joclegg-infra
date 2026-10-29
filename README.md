@@ -22,7 +22,7 @@ Until Key Vault and SOPS are set up, secrets are GitHub Actions secrets in this 
 | Secret | Used for |
 | --- | --- |
 | `TF_API_TOKEN` | HCP Terraform team token (owners): state and the `tfe` provider |
-| `PUZZLES_INFRA_APP_KEY` | Private key of the `joclegg-puzzles-infra` GitHub App, for `github/`. Its Client ID is the `PUZZLES_INFRA_APP_CLIENT_ID` variable. |
+| `PUZZLES_GITHUB_TOKEN` | Fine-grained token for `github/`: all repositories, with Actions, Administration, Contents, Environments, Pages, Secrets and Variables write. A GitHub App can't create repositories on a personal account, so this is a token. It expires after a year. |
 
 ## Running locally
 

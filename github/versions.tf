@@ -17,8 +17,8 @@ terraform {
   }
 }
 
-# Signs in with GITHUB_TOKEN: in CI a 1-hour token from the puzzles-infra GitHub
-# App, locally `gh auth token`.
+# Signs in with GITHUB_TOKEN: in CI the PUZZLES_GITHUB_TOKEN secret, locally
+# `gh auth token`.
 provider "github" {
   owner = "joclegg"
 }

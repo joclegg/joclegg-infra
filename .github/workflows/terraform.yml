@@ -59,6 +59,8 @@ jobs:
     env:
       TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
       TFE_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      # Fine-grained token for the github provider. Only github/ uses it.
+      GITHUB_TOKEN: ${{ matrix.root == 'github' && secrets.PUZZLES_GITHUB_TOKEN || '' }}
       TF_IN_AUTOMATION: 'true'
     defaults:
       run:
@@ -67,21 +69,6 @@ jobs:
         working-directory: ${{ matrix.root }}
     steps:
       - uses: actions/checkout@v7
-      # github/ signs in as the puzzles-infra GitHub App, with a 1-hour token
-      # for every repository on the account.
-      - id: app-token
-        if: matrix.root == 'github'
-        uses: actions/create-github-app-token@v3
-        with:
-          client-id: ${{ vars.PUZZLES_INFRA_APP_CLIENT_ID }}
-          private-key: ${{ secrets.PUZZLES_INFRA_APP_KEY }}
-          owner: joclegg
-      - name: Pass the app token to Terraform
-        if: matrix.root == 'github'
-        env:
-          TOKEN: ${{ steps.app-token.outputs.token }}
-        run: echo "GITHUB_TOKEN=$TOKEN" >> "$GITHUB_ENV"
-        working-directory: .
       - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: 1.17.1
