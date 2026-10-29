@@ -41,8 +41,12 @@ resource "supabase_settings" "puzzles" {
 
     disable_signup                   = false
     external_anonymous_users_enabled = false
-    external_email_enabled           = true
     mailer_autoconfirm               = false
+
+    # Email sign-in (password, magic links, codes) is off: both apps sign in
+    # with Google or Microsoft only, and Supabase's own email sender only
+    # emails project members.
+    external_email_enabled = false
 
     external_google_enabled   = true
     external_google_client_id = "173393208059-736edpatfv5vfdbvt8cm84lqujbp46im.apps.googleusercontent.com"
