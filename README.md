@@ -10,8 +10,8 @@ Terraform for the Puzzles apps. Each top-level folder is its own root, with its 
 
 | Folder | Workspace | What it manages |
 | --- | --- | --- |
-| `hcp/` | `puzzles-hcp` | The HCP Terraform organisation and workspaces. `puzzles-hcp` was made by hand and imported; the organisation and it have `prevent_destroy`, because it holds this state. |
-| `github/` | `puzzles-github` | Every repository on the account: settings, `main` protection and Pages, through `modules/repository`. All imported; repositories have `prevent_destroy` and are archived, not deleted, if removed. |
+| `hcp/` | `joclegg-hcp` | The HCP Terraform organisation and workspaces. `joclegg-hcp` was made by hand and imported; the organisation and it have `prevent_destroy`, because it holds this state. |
+| `github/` | `joclegg-github` | Every repository on the account: settings, `main` protection and Pages, through `modules/repository`. All imported; repositories have `prevent_destroy` and are archived, not deleted, if removed. |
 
 `modules/` will hold shared modules; a change there runs every folder.
 

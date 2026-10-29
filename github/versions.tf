@@ -5,7 +5,7 @@ terraform {
     organization = "joclegg"
 
     workspaces {
-      name = "puzzles-github"
+      name = "joclegg-github"
     }
   }
 
