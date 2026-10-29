@@ -4,6 +4,7 @@ Terraform for everything the joclegg account runs on: HCP Terraform, every GitHu
 
 - Pull requests: format check, validate and plan for each changed folder. The plans are in the run summary.
 - Merges to `main`: plan, then apply, for each changed folder.
+- Every Monday, and when run by hand: plan and apply every folder, which picks up the Azure secret rotation and shows drift.
 - The `terraform` check passes when every folder that ran passed.
 
 ## Folders
@@ -11,7 +12,7 @@ Terraform for everything the joclegg account runs on: HCP Terraform, every GitHu
 | Folder | Workspace | What it manages |
 | --- | --- | --- |
 | `hcp/` | `joclegg-hcp` | The HCP Terraform organisation and workspaces. `joclegg-hcp` was made by hand and imported; the organisation and it have `prevent_destroy`, because it holds this state. |
-| `azure/` | `joclegg-azure` | Coming next. |
+| `azure/` | `joclegg-azure` | The `Puzzles` Microsoft Entra ID app registration, for "Sign in with Microsoft": personal and work accounts, the Supabase callback, the `email` and `xms_edov` claims, and a client secret replaced every 180 days. Signs in as `joclegg-infra-github`, which was made by hand with GitHub OIDC credentials and `Application.ReadWrite.OwnedBy`. |
 | `github/` | `joclegg-github` | Every repository on the account: settings, `main` protection and Pages, through `modules/repository`. All imported; repositories have `prevent_destroy` and are archived, not deleted, if removed. |
 | `supabase/` | `joclegg-supabase` | The Puzzles Supabase project and its auth settings: site URL, redirect URLs, sign-ups, the Google provider (not its secret), and token lifetimes. Imported. Email templates aren't managed: the free tier's API refuses changes to them. Only the auth keys listed are managed; the database schema stays in puzzles-backend. |
 
