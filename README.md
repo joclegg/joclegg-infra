@@ -1,6 +1,6 @@
-# puzzles-infra
+# joclegg-infra
 
-Terraform for the Puzzles apps. Each top-level folder is its own root, with its own state in an HCP Terraform workspace (organisation `joclegg`, execution mode Local), so every run happens in GitHub Actions.
+Terraform for everything the joclegg account runs on: HCP Terraform, every GitHub repository, and the Puzzles apps' services. Each top-level folder is its own root, with its own state in an HCP Terraform workspace (organisation `joclegg`, execution mode Local), so every run happens in GitHub Actions.
 
 - Pull requests: format check, validate and plan for each changed folder. The plans are in the run summary.
 - Merges to `main`: plan, then apply, for each changed folder.

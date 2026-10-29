@@ -28,8 +28,8 @@ locals {
       description     = "Supabase backend for Puzzles score sync"
       required_checks = ["build-and-test"]
     }
-    "puzzles-infra" = {
-      description     = "Terraform for the Puzzles apps"
+    "joclegg-infra" = {
+      description     = "Terraform for everything the joclegg account runs on"
       required_checks = ["terraform"]
     }
     "cv" = {
@@ -57,4 +57,11 @@ module "repository" {
   secret_scanning        = lookup(each.value, "secret_scanning", true)
   required_checks        = lookup(each.value, "required_checks", null)
   pages                  = lookup(each.value, "pages", null)
+}
+
+# puzzles-infra was renamed joclegg-infra, as it manages the whole account.
+# GitHub redirects the old name.
+moved {
+  from = module.repository["puzzles-infra"]
+  to   = module.repository["joclegg-infra"]
 }

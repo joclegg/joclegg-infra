@@ -1,5 +1,5 @@
 # Actions secrets for the other repositories. Each value is stored once, as a
-# puzzles-infra secret of the same name, and the workflow passes it in as
+# joclegg-infra secret of the same name, and the workflow passes it in as
 # TF_VAR_<name>. Values end up in this workspace's state.
 
 variable "PUZZLES_DISPATCH_APP_CLIENT_ID" {
@@ -41,7 +41,7 @@ variable "PUZZLES_KEY_PASSWORD" {
 }
 
 locals {
-  # puzzles-infra reads its own copies, so it isn't listed.
+  # joclegg-infra reads its own copies, so it isn't listed.
   actions_secrets = {
     "puzzles-android" = {
       PUZZLES_DISPATCH_APP_KEY  = var.PUZZLES_DISPATCH_APP_KEY
