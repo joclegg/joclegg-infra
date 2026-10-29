@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Weekly, every folder: picks up time-based changes such as the Azure client
+  # secret's rotation, and shows drift.
+  schedule:
+    - cron: '17 6 * * 1'
 
 permissions:
   contents: read
@@ -17,7 +21,7 @@ concurrency:
 jobs:
   # Each top-level folder with a versions.tf is its own root and workspace.
   # Only changed roots run, unless modules/ or this workflow changed, or the
-  # run was started by hand.
+  # run was started by hand or by the schedule.
   roots:
     runs-on: ubuntu-latest
     outputs:
@@ -33,7 +37,7 @@ jobs:
           BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: |
           all=$(ls -d */versions.tf 2>/dev/null | xargs -n1 dirname | grep -vx modules || true)
-          if [ "$EVENT" = workflow_dispatch ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+          if [ "$EVENT" = workflow_dispatch ] || [ "$EVENT" = schedule ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
             roots=$all
           else
             changed=$(git diff --name-only "$BASE" HEAD)
@@ -56,11 +60,20 @@ jobs:
         root: ${{ fromJSON(needs.roots.outputs.roots) }}
     name: ${{ matrix.root }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # GitHub's OIDC token, for azure/ to sign in to Microsoft Entra ID.
+      id-token: write
     env:
       TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
       TFE_TOKEN: ${{ secrets.TF_API_TOKEN }}
       # Fine-grained token for the github provider. Only github/ uses it.
       GITHUB_TOKEN: ${{ matrix.root == 'github' && secrets.INFRA_GITHUB_TOKEN || '' }}
+      # azure/ signs in as the joclegg-infra-github app registration with
+      # GitHub's OIDC token. Neither ID is secret.
+      ARM_USE_OIDC: ${{ matrix.root == 'azure' && 'true' || '' }}
+      ARM_CLIENT_ID: ${{ matrix.root == 'azure' && vars.AZURE_CLIENT_ID || '' }}
+      ARM_TENANT_ID: ${{ matrix.root == 'azure' && vars.AZURE_TENANT_ID || '' }}
       # supabase/ signs in with the same token puzzles-backend uses.
       SUPABASE_ACCESS_TOKEN: ${{ matrix.root == 'supabase' && secrets.SUPABASE_ACCESS_TOKEN || '' }}
       # Values for github/secrets.tf, which copies them to the other repositories.
