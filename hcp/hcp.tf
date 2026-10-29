@@ -46,3 +46,32 @@ resource "tfe_workspace_settings" "hcp" {
   workspace_id   = tfe_workspace.hcp.id
   execution_mode = "local"
 }
+
+# One workspace per folder. Local execution, like puzzles-hcp.
+locals {
+  workspaces = {
+    github = "GitHub repositories and their settings, from github/ in joclegg/puzzles-infra."
+  }
+}
+
+resource "tfe_workspace" "folder" {
+  for_each = local.workspaces
+
+  name         = "puzzles-${each.key}"
+  organization = tfe_organization.joclegg.name
+  description  = each.value
+
+  file_triggers_enabled = false
+  queue_all_runs        = false
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "tfe_workspace_settings" "folder" {
+  for_each = local.workspaces
+
+  workspace_id   = tfe_workspace.folder[each.key].id
+  execution_mode = "local"
+}
