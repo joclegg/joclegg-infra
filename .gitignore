@@ -1,3 +1,5 @@
 .terraform/
 *.tfplan
 crash.log
+# The Supabase CLI writes this when run in supabase/.
+supabase/.temp/
