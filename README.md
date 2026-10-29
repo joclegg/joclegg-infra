@@ -17,12 +17,14 @@ Terraform for the Puzzles apps. Each top-level folder is its own root, with its 
 
 ## Secrets
 
-Until Key Vault and SOPS are set up, secrets are GitHub Actions secrets in this repository:
+Every secret is a GitHub Actions secret in this repository, stored once. `github/secrets.tf` copies the ones other repositories need into them, so to change one, set it here and run the workflow (or merge any change to `github/`).
 
 | Secret | Used for |
 | --- | --- |
 | `TF_API_TOKEN` | HCP Terraform team token (owners): state and the `tfe` provider |
-| `PUZZLES_DISPATCH_TOKEN` | Tells `joclegg/puzzles` to move its submodules after each merge, like the other repositories (`notify-puzzles.yml`). |
+| `PUZZLES_DISPATCH_TOKEN` | Tells `joclegg/puzzles` to move its submodules after each merge (`notify-puzzles.yml`). Copied to puzzles-android, puzzles-web, puzzles-data and puzzles-backend. |
+| `SUPABASE_ACCESS_TOKEN` | Copied to puzzles-backend, for pushing migrations. |
+| `PUZZLES_KEYSTORE_BASE64`, `PUZZLES_KEYSTORE_PASSWORD`, `PUZZLES_KEY_ALIAS`, `PUZZLES_KEY_PASSWORD` | The Android release keystore, base64-encoded, and its passwords. Copied to puzzles-android. Keep a copy outside GitHub: secrets can't be read back. |
 | `PUZZLES_GITHUB_TOKEN` | Fine-grained token for `github/`: all repositories, with Actions, Administration, Contents, Environments, Pages, Secrets and Variables write. A GitHub App can't create repositories on a personal account, so this is a token. It expires after a year. |
 
 ## Running locally

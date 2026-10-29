@@ -61,6 +61,13 @@ jobs:
       TFE_TOKEN: ${{ secrets.TF_API_TOKEN }}
       # Fine-grained token for the github provider. Only github/ uses it.
       GITHUB_TOKEN: ${{ matrix.root == 'github' && secrets.PUZZLES_GITHUB_TOKEN || '' }}
+      # Values for github/secrets.tf, which copies them to the other repositories.
+      TF_VAR_PUZZLES_DISPATCH_TOKEN: ${{ matrix.root == 'github' && secrets.PUZZLES_DISPATCH_TOKEN || '' }}
+      TF_VAR_SUPABASE_ACCESS_TOKEN: ${{ matrix.root == 'github' && secrets.SUPABASE_ACCESS_TOKEN || '' }}
+      TF_VAR_PUZZLES_KEYSTORE_BASE64: ${{ matrix.root == 'github' && secrets.PUZZLES_KEYSTORE_BASE64 || '' }}
+      TF_VAR_PUZZLES_KEYSTORE_PASSWORD: ${{ matrix.root == 'github' && secrets.PUZZLES_KEYSTORE_PASSWORD || '' }}
+      TF_VAR_PUZZLES_KEY_ALIAS: ${{ matrix.root == 'github' && secrets.PUZZLES_KEY_ALIAS || '' }}
+      TF_VAR_PUZZLES_KEY_PASSWORD: ${{ matrix.root == 'github' && secrets.PUZZLES_KEY_PASSWORD || '' }}
       TF_IN_AUTOMATION: 'true'
     defaults:
       run:
