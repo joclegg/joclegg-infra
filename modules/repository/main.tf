@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    github = {
+      source = "integrations/github"
+    }
+  }
+}
+
 variable "name" {
   type = string
 }
