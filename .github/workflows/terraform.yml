@@ -73,7 +73,7 @@ jobs:
         if: matrix.root == 'github'
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ vars.PUZZLES_INFRA_APP_ID }}
+          client-id: ${{ vars.PUZZLES_INFRA_APP_CLIENT_ID }}
           private-key: ${{ secrets.PUZZLES_INFRA_APP_KEY }}
           owner: joclegg
       - name: Pass the app token to Terraform
