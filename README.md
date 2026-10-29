@@ -11,7 +11,7 @@ Terraform for the Puzzles apps. Each top-level folder is its own root, with its 
 | Folder | Workspace | What it manages |
 | --- | --- | --- |
 | `hcp/` | `puzzles-hcp` | The HCP Terraform organisation and workspaces. `puzzles-hcp` was made by hand and imported; the organisation and it have `prevent_destroy`, because it holds this state. |
-| `github/` | `puzzles-github` | Coming next. |
+| `github/` | `puzzles-github` | Every repository on the account: settings, `main` protection and Pages, through `modules/repository`. All imported; repositories have `prevent_destroy` and are archived, not deleted, if removed. |
 
 `modules/` will hold shared modules; a change there runs every folder.
 
@@ -22,6 +22,7 @@ Until Key Vault and SOPS are set up, secrets are GitHub Actions secrets in this 
 | Secret | Used for |
 | --- | --- |
 | `TF_API_TOKEN` | HCP Terraform team token (owners): state and the `tfe` provider |
+| `PUZZLES_GITHUB_TOKEN` | Fine-grained token for `github/`: all repositories, with Actions, Administration, Contents, Environments, Pages, Secrets and Variables write. A GitHub App can't create repositories on a personal account, so this is a token. It expires after a year. |
 
 ## Running locally
 
@@ -31,3 +32,7 @@ cd hcp
 terraform init
 terraform plan
 ```
+
+For `github/`, sign in with your own GitHub login: `GITHUB_TOKEN=$(gh auth token) terraform plan`.
+
+Locally, only plan. Changes are applied by the workflow after merging.

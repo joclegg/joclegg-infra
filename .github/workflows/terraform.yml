@@ -59,6 +59,8 @@ jobs:
     env:
       TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
       TFE_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      # Fine-grained token for the github provider. Only github/ uses it.
+      GITHUB_TOKEN: ${{ matrix.root == 'github' && secrets.PUZZLES_GITHUB_TOKEN || '' }}
       TF_IN_AUTOMATION: 'true'
     defaults:
       run:
