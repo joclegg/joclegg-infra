@@ -1,6 +1,8 @@
 # The Puzzles app registration, for "Sign in with Microsoft" through Supabase.
 # supabase/ reads its client ID and secret from this workspace's outputs.
 
+data "azuread_client_config" "current" {}
+
 data "azuread_application_published_app_ids" "well_known" {}
 
 data "azuread_service_principal" "msgraph" {
@@ -9,6 +11,10 @@ data "azuread_service_principal" "msgraph" {
 
 resource "azuread_application" "puzzles" {
   display_name = "Puzzles"
+
+  # Owned by joclegg-infra-github, the identity Terraform signs in as: its
+  # Application.ReadWrite.OwnedBy permission only reaches apps it owns.
+  owners = [data.azuread_client_config.current.object_id]
 
   # Personal accounts (Outlook, Hotmail, Xbox) and any work or school account.
   sign_in_audience = "AzureADandPersonalMicrosoftAccount"
