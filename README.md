@@ -14,7 +14,7 @@ Terraform for everything the joclegg account runs on: HCP Terraform, every GitHu
 | `hcp/` | `joclegg-hcp` | The HCP Terraform organisation and workspaces. `joclegg-hcp` was made by hand and imported; the organisation and it have `prevent_destroy`, because it holds this state. |
 | `azure/` | `joclegg-azure` | The `Puzzles` Microsoft Entra ID app registration, for "Sign in with Microsoft": personal and work accounts, the Supabase callback, the `email` and `xms_edov` claims, and a client secret replaced every 180 days. Signs in as `joclegg-infra-github`, which was made by hand with GitHub OIDC credentials and `Application.ReadWrite.OwnedBy`. |
 | `github/` | `joclegg-github` | Every repository on the account: settings, `main` protection and Pages, through `modules/repository`. All imported; repositories have `prevent_destroy` and are archived, not deleted, if removed. |
-| `supabase/` | `joclegg-supabase` | The Puzzles Supabase project and its auth settings: site URL, redirect URLs, sign-ups, the Google provider (not its secret), and token lifetimes. Imported. Email templates aren't managed: the free tier's API refuses changes to them. Only the auth keys listed are managed; the database schema stays in puzzles-backend. |
+| `supabase/` | `joclegg-supabase` | The Puzzles Supabase project and its auth settings: site URL, redirect URLs, sign-ups, the Google provider (not its secret), the Azure provider (client ID and secret from `azure/`'s outputs), and token lifetimes. Imported. Email templates aren't managed: the free tier's API refuses changes to them. Only the auth keys listed are managed; the database schema stays in puzzles-backend. |
 
 `modules/` will hold shared modules; a change there runs every folder.
 
