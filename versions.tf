@@ -17,7 +17,7 @@ terraform {
   }
 }
 
-# Signs in with TF_TOKEN_app_terraform_io, the same token that stores the state.
+# Signs in with TFE_TOKEN, the same token that stores the state.
 provider "tfe" {
   organization = "joclegg"
 }
