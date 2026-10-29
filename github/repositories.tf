@@ -39,9 +39,6 @@ locals {
       required_checks        = ["build-and-test"]
       pages                  = { build_type = "workflow" }
     }
-    "terraform-test" = {
-      description = "Test repository created by Terraform from puzzles-infra"
-    }
     "joclegg.github.io" = {
       description = "Root of joclegg.github.io"
       pages       = { build_type = "legacy" }
@@ -61,4 +58,3 @@ module "repository" {
   required_checks        = lookup(each.value, "required_checks", null)
   pages                  = lookup(each.value, "pages", null)
 }
-
