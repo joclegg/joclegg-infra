@@ -1,0 +1,80 @@
+# Every repository on the joclegg account. Each was made by hand and imported.
+
+locals {
+  repositories = {
+    "puzzles" = {
+      description = "Puzzles: the Android app, the website and their shared puzzle data, as submodules"
+    }
+    "puzzles-android" = {
+      description            = "Offline puzzle games for Android: sudoku and solitaire"
+      delete_branch_on_merge = true
+      required_checks = [
+        "Lint, unit tests, build",
+        "Maestro e2e (part 1 of 3)",
+        "Maestro e2e (part 2 of 3)",
+        "Maestro e2e (part 3 of 3)",
+      ]
+    }
+    "puzzles-web" = {
+      description     = "Web version of Puzzles: eight offline puzzle games in React and TypeScript"
+      required_checks = ["build-and-test"]
+      pages           = { build_type = "workflow" }
+    }
+    "puzzles-data" = {
+      description = "Puzzle banks and word lists shared by puzzles-android and puzzles-web"
+    }
+    "puzzles-backend" = {
+      description     = "Supabase backend for Puzzles score sync"
+      required_checks = ["build-and-test"]
+    }
+    "puzzles-infra" = {
+      description     = "Terraform for the Puzzles apps"
+      required_checks = ["terraform"]
+    }
+    "cv" = {
+      homepage_url           = "https://joclegg.github.io/cv/"
+      delete_branch_on_merge = true
+      secret_scanning        = false
+      required_checks        = ["build-and-test"]
+      pages                  = { build_type = "workflow" }
+    }
+    "joclegg.github.io" = {
+      description = "Root of joclegg.github.io"
+      pages       = { build_type = "legacy" }
+    }
+  }
+
+  with_pages = { for name, repo in local.repositories : name => repo if lookup(repo, "pages", null) != null }
+  protected  = { for name, repo in local.repositories : name => repo if lookup(repo, "required_checks", null) != null }
+}
+
+module "repository" {
+  source   = "../modules/repository"
+  for_each = local.repositories
+
+  name                   = each.key
+  description            = lookup(each.value, "description", null)
+  homepage_url           = lookup(each.value, "homepage_url", null)
+  delete_branch_on_merge = lookup(each.value, "delete_branch_on_merge", false)
+  secret_scanning        = lookup(each.value, "secret_scanning", true)
+  required_checks        = lookup(each.value, "required_checks", null)
+  pages                  = lookup(each.value, "pages", null)
+}
+
+import {
+  for_each = local.repositories
+  to       = module.repository[each.key].github_repository.this
+  id       = each.key
+}
+
+import {
+  for_each = local.protected
+  to       = module.repository[each.key].github_branch_protection.main[0]
+  id       = "${each.key}:main"
+}
+
+import {
+  for_each = local.with_pages
+  to       = module.repository[each.key].github_repository_pages.this[0]
+  id       = each.key
+}
