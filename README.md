@@ -22,6 +22,7 @@ Until Key Vault and SOPS are set up, secrets are GitHub Actions secrets in this 
 | Secret | Used for |
 | --- | --- |
 | `TF_API_TOKEN` | HCP Terraform team token (owners): state and the `tfe` provider |
+| `PUZZLES_DISPATCH_TOKEN` | Tells `joclegg/puzzles` to move its submodules after each merge, like the other repositories (`notify-puzzles.yml`). |
 | `PUZZLES_GITHUB_TOKEN` | Fine-grained token for `github/`: all repositories, with Actions, Administration, Contents, Environments, Pages, Secrets and Variables write. A GitHub App can't create repositories on a personal account, so this is a token. It expires after a year. |
 
 ## Running locally
