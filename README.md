@@ -26,7 +26,7 @@ Every secret is a GitHub Actions secret in this repository, stored once. `github
 | `PUZZLES_DISPATCH_APP_KEY` | Private key of the `joclegg-puzzles-dispatch` GitHub App, installed only on `joclegg/puzzles` with Contents write. `notify-puzzles.yml` turns it into a 1-hour token to tell `joclegg/puzzles` to move its submodules after each merge. Its Client ID is the `PUZZLES_DISPATCH_APP_CLIENT_ID` variable. Both are copied to puzzles-android, puzzles-web, puzzles-data and puzzles-backend. |
 | `SUPABASE_ACCESS_TOKEN` | Used by `supabase/`, and copied to puzzles-backend for pushing migrations. |
 | `PUZZLES_KEYSTORE_BASE64`, `PUZZLES_KEYSTORE_PASSWORD`, `PUZZLES_KEY_ALIAS`, `PUZZLES_KEY_PASSWORD` | The Android release keystore, base64-encoded, and its passwords. Copied to puzzles-android. Keep a copy outside GitHub: secrets can't be read back. |
-| `PUZZLES_GITHUB_TOKEN` | Fine-grained token for `github/`: all repositories, with Actions, Administration, Contents, Environments, Pages, Secrets and Variables write. A GitHub App can't create repositories on a personal account, so this is a token. It expires after a year. |
+| `INFRA_GITHUB_TOKEN` | Fine-grained token for `github/`: all repositories, with Actions, Administration, Contents, Environments, Pages, Secrets and Variables write. A GitHub App can't create repositories on a personal account, so this is a token. It expires after a year. |
 
 ## Running locally
 

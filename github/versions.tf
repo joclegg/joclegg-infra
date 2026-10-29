@@ -17,7 +17,7 @@ terraform {
   }
 }
 
-# Signs in with GITHUB_TOKEN: in CI the PUZZLES_GITHUB_TOKEN secret, locally
+# Signs in with GITHUB_TOKEN: in CI the INFRA_GITHUB_TOKEN secret, locally
 # `gh auth token`.
 provider "github" {
   owner = "joclegg"
