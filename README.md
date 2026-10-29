@@ -12,7 +12,7 @@ Terraform for everything the joclegg account runs on: HCP Terraform, every GitHu
 | --- | --- | --- |
 | `hcp/` | `joclegg-hcp` | The HCP Terraform organisation and workspaces. `joclegg-hcp` was made by hand and imported; the organisation and it have `prevent_destroy`, because it holds this state. |
 | `github/` | `joclegg-github` | Every repository on the account: settings, `main` protection and Pages, through `modules/repository`. All imported; repositories have `prevent_destroy` and are archived, not deleted, if removed. |
-| `supabase/` | `joclegg-supabase` | Coming next. |
+| `supabase/` | `joclegg-supabase` | The Puzzles Supabase project and its auth settings: site URL, redirect URLs, sign-ups, the Google provider (not its secret), token lifetimes, and the email subjects and templates (`supabase/templates/`). Imported. Only the auth keys listed are managed; the database schema stays in puzzles-backend. |
 
 `modules/` will hold shared modules; a change there runs every folder.
 
@@ -24,7 +24,7 @@ Every secret is a GitHub Actions secret in this repository, stored once. `github
 | --- | --- |
 | `TF_API_TOKEN` | HCP Terraform team token (owners): state and the `tfe` provider |
 | `PUZZLES_DISPATCH_APP_KEY` | Private key of the `joclegg-puzzles-dispatch` GitHub App, installed only on `joclegg/puzzles` with Contents write. `notify-puzzles.yml` turns it into a 1-hour token to tell `joclegg/puzzles` to move its submodules after each merge. Its Client ID is the `PUZZLES_DISPATCH_APP_CLIENT_ID` variable. Both are copied to puzzles-android, puzzles-web, puzzles-data and puzzles-backend. |
-| `SUPABASE_ACCESS_TOKEN` | Copied to puzzles-backend, for pushing migrations. |
+| `SUPABASE_ACCESS_TOKEN` | Used by `supabase/`, and copied to puzzles-backend for pushing migrations. |
 | `PUZZLES_KEYSTORE_BASE64`, `PUZZLES_KEYSTORE_PASSWORD`, `PUZZLES_KEY_ALIAS`, `PUZZLES_KEY_PASSWORD` | The Android release keystore, base64-encoded, and its passwords. Copied to puzzles-android. Keep a copy outside GitHub: secrets can't be read back. |
 | `PUZZLES_GITHUB_TOKEN` | Fine-grained token for `github/`: all repositories, with Actions, Administration, Contents, Environments, Pages, Secrets and Variables write. A GitHub App can't create repositories on a personal account, so this is a token. It expires after a year. |
 
@@ -37,6 +37,6 @@ terraform init
 terraform plan
 ```
 
-For `github/`, sign in with your own GitHub login: `GITHUB_TOKEN=$(gh auth token) terraform plan`.
+For `github/`, sign in with your own GitHub login: `GITHUB_TOKEN=$(gh auth token) terraform plan`. For `supabase/`, set `SUPABASE_ACCESS_TOKEN` to a Supabase access token.
 
 Locally, only plan. Changes are applied by the workflow after merging.
