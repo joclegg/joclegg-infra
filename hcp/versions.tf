@@ -5,7 +5,7 @@ terraform {
     organization = "joclegg"
 
     workspaces {
-      name = "puzzles"
+      name = "puzzles-hcp"
     }
   }
 
