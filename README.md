@@ -27,7 +27,7 @@ Every secret is a GitHub Actions secret in this repository, stored once. `github
 | Secret | Used for |
 | --- | --- |
 | `TF_API_TOKEN` | HCP Terraform team token (owners): state and the `tfe` provider |
-| `PUZZLES_DISPATCH_APP_KEY` | Private key of the `joclegg-puzzles-dispatch` GitHub App, installed only on `joclegg/puzzles` with Contents write. `notify-puzzles.yml` turns it into a 1-hour token to tell `joclegg/puzzles` to move its submodules after each merge. Its Client ID is the `PUZZLES_DISPATCH_APP_CLIENT_ID` variable. Both are copied to puzzles-android, puzzles-web, puzzles-data and puzzles-backend. |
+| `PUZZLES_DISPATCH_APP_KEY` | Private key of the `joclegg-puzzles-dispatch` GitHub App, installed only on `joclegg/puzzles` with Contents write. `notify-puzzles.yml` turns it into a 1-hour token to tell `joclegg/puzzles` to move its submodules after each merge. Its Client ID is the `PUZZLES_DISPATCH_APP_CLIENT_ID` variable. Both are copied to puzzles-android, puzzles-ios, puzzles-web, puzzles-data and puzzles-backend. |
 | `MAILGUN_API_KEY` | For `mailgun/`. |
 | `CLOUDFLARE_API_TOKEN` | For `cloudflare/`: zone, zone settings and DNS write on `joclegg.dev` only. Expires 29 October 2027. |
 | `SUPABASE_ACCESS_TOKEN` | Used by `supabase/`, and copied to puzzles-backend for pushing migrations. |

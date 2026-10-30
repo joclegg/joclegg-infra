@@ -50,6 +50,9 @@ locals {
       PUZZLES_KEY_ALIAS         = var.PUZZLES_KEY_ALIAS
       PUZZLES_KEY_PASSWORD      = var.PUZZLES_KEY_PASSWORD
     }
+    "puzzles-ios" = {
+      PUZZLES_DISPATCH_APP_KEY = var.PUZZLES_DISPATCH_APP_KEY
+    }
     "puzzles-web" = {
       PUZZLES_DISPATCH_APP_KEY = var.PUZZLES_DISPATCH_APP_KEY
     }
