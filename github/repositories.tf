@@ -26,6 +26,9 @@ locals {
     }
     "puzzles-data" = {
       description = "Puzzle banks and word lists shared by puzzles-android and puzzles-web"
+      # The apps download new banks from https://joclegg.github.io/puzzles-data/
+      # so new puzzles don't need an app release.
+      pages = { build_type = "workflow" }
     }
     "puzzles-backend" = {
       description     = "Supabase backend for Puzzles score sync"
