@@ -16,7 +16,7 @@ Terraform for everything the joclegg account runs on: HCP Terraform, every GitHu
 | `cloudflare/` | `joclegg-cloudflare` | DNS records on `joclegg.dev`, bought through Cloudflare Registrar: Mailgun's records from `mailgun/`'s outputs, DMARC, and an SPF record saying the root domain sends no email. The zone itself isn't managed. |
 | `github/` | `joclegg-github` | Every repository on the account: settings, `main` protection and Pages, through `modules/repository`. All imported; repositories have `prevent_destroy` and are archived, not deleted, if removed. |
 | `mailgun/` | `joclegg-mailgun` | Sending email from `mg.joclegg.dev` through Mailgun (community provider `wgebis/mailgun`; there's no official one), and the SMTP login Supabase uses. Outputs the DNS records `cloudflare/` publishes. |
-| `supabase/` | `joclegg-supabase` | The Puzzles Supabase project and its auth settings: site URL, redirect URLs, sign-ups, email sign-in (off), the Google provider (not its secret), the Azure provider (client ID and secret from `azure/`'s outputs), and token lifetimes. Imported. Email templates aren't managed: the free tier's API refuses changes to them. Only the auth keys listed are managed; the database schema stays in puzzles-backend. |
+| `supabase/` | `joclegg-supabase` | The Puzzles Supabase project and its auth settings: site URL, redirect URLs, sign-ups, email sign-in (off), the Google provider (not its secret), the Azure provider (client ID and secret from `azure/`'s outputs), SMTP through Mailgun (from `mailgun/`'s outputs), and token lifetimes. Imported. Email templates aren't managed yet. Only the auth keys listed are managed; the database schema stays in puzzles-backend. |
 
 `modules/` will hold shared modules; a change there runs every folder.
 
