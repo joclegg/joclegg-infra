@@ -22,7 +22,7 @@ terraform {
 }
 
 # Signs in with CLOUDFLARE_API_TOKEN: zone, zone settings and DNS write on
-# joclegg.dev only.
+# joclegg.dev, and Workers Scripts write on the account.
 provider "cloudflare" {}
 
 # Reads mailgun/'s outputs. Signs in with TFE_TOKEN.
