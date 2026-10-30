@@ -59,7 +59,7 @@ resource "supabase_settings" "puzzles" {
 
   auth = jsonencode(merge({
     site_url       = "https://joclegg.github.io/puzzles-web/"
-    uri_allow_list = join(",", ["http://localhost:5173/**", "com.joclegg.puzzles://auth"])
+    uri_allow_list = join(",", ["https://puzzles.joclegg.dev/**", "http://localhost:5173/**", "com.joclegg.puzzles://auth"])
 
     disable_signup                   = false
     external_anonymous_users_enabled = false
