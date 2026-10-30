@@ -16,6 +16,9 @@ locals {
         "Maestro e2e (part 3 of 3)",
       ]
     }
+    "puzzles-ios" = {
+      description = "iOS version of Puzzles: eight offline puzzle games"
+    }
     "puzzles-web" = {
       description     = "Web version of Puzzles: eight offline puzzle games in React and TypeScript"
       required_checks = ["build-and-test"]
