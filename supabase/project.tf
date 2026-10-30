@@ -65,10 +65,11 @@ resource "supabase_settings" "puzzles" {
     external_anonymous_users_enabled = false
     mailer_autoconfirm               = false
 
-    # Email sign-in (password, magic links, codes) is off: both apps sign in
-    # with Google or Microsoft only, and Supabase's own email sender only
-    # emails project members.
-    external_email_enabled = false
+    # Email sign-in: both apps send a magic link with a code, through Mailgun.
+    # The link only works in the browser or app that asked for it (PKCE), so
+    # the code covers opening the email somewhere else.
+    external_email_enabled = true
+    rate_limit_email_sent  = 30
 
     external_google_enabled   = true
     external_google_client_id = "173393208059-736edpatfv5vfdbvt8cm84lqujbp46im.apps.googleusercontent.com"
