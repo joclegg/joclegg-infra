@@ -3,6 +3,23 @@
 
 locals {
   project_ref = "nrlmaucpuesfmvqhtupe"
+
+  # Email subjects; each one's body is templates/<name>.html.
+  email_subjects = {
+    confirmation                       = "Confirm your email address"
+    email_change                       = "Confirm your new email address"
+    email_changed_notification         = "Your email address was changed"
+    identity_linked_notification       = "A new sign-in method was linked to your account"
+    identity_unlinked_notification     = "A sign-in method was removed from your account"
+    invite                             = "You've been invited"
+    magic_link                         = "Your sign-in link"
+    mfa_factor_enrolled_notification   = "A new verification method was added to your account"
+    mfa_factor_unenrolled_notification = "A verification method was removed from your account"
+    password_changed_notification      = "Your password was changed"
+    phone_changed_notification         = "Your phone number was changed"
+    reauthentication                   = "{{ .Token }} is your verification code"
+    recovery                           = "Reset your password"
+  }
 }
 
 # The Puzzles Microsoft Entra ID app, from azure/. Its client secret is
@@ -32,15 +49,15 @@ resource "supabase_project" "puzzles" {
 }
 
 # Only the keys listed here are managed; every other auth setting is left as
-# it is. The Azure client secret comes from azure/. Not managed:
-# - The Google client secret: Supabase never returns it, so it stays as set in
-#   the dashboard.
-# - Email subjects and templates: they were set in the dashboard while
-#   Supabase's own sender was in use, which refuses changes through the API.
+# it is. The Azure client secret comes from azure/, the SMTP login from
+# mailgun/. Email templates can be changed now that Supabase sends through
+# Mailgun: its own sender refuses template changes on the free tier. Not
+# managed: the Google client secret, which Supabase never returns, so it stays
+# as set in the dashboard.
 resource "supabase_settings" "puzzles" {
   project_ref = supabase_project.puzzles.id
 
-  auth = jsonencode({
+  auth = jsonencode(merge({
     site_url       = "https://joclegg.github.io/puzzles-web/"
     uri_allow_list = join(",", ["http://localhost:5173/**", "com.joclegg.puzzles://auth"])
 
@@ -74,5 +91,8 @@ resource "supabase_settings" "puzzles" {
     jwt_exp                               = 3600
     refresh_token_rotation_enabled        = true
     security_refresh_token_reuse_interval = 10
-  })
+    },
+    { for name, subject in local.email_subjects : "mailer_subjects_${name}" => subject },
+    { for name, subject in local.email_subjects : "mailer_templates_${name}_content" => file("${path.module}/templates/${name}.html") },
+  ))
 }
