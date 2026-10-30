@@ -11,6 +11,11 @@ data "tfe_outputs" "azure" {
   workspace = "joclegg-azure"
 }
 
+# The SMTP login for mg.joclegg.dev, from mailgun/.
+data "tfe_outputs" "mailgun" {
+  workspace = "joclegg-mailgun"
+}
+
 resource "supabase_project" "puzzles" {
   organization_id = "xnvkcupvhffhdgwtpyvu"
   name            = "puzzles"
@@ -30,8 +35,8 @@ resource "supabase_project" "puzzles" {
 # it is. The Azure client secret comes from azure/. Not managed:
 # - The Google client secret: Supabase never returns it, so it stays as set in
 #   the dashboard.
-# - Email subjects and templates: on the free tier with Supabase's own email
-#   sender, the API refuses any change to them, even to the same text.
+# - Email subjects and templates: they were set in the dashboard while
+#   Supabase's own sender was in use, which refuses changes through the API.
 resource "supabase_settings" "puzzles" {
   project_ref = supabase_project.puzzles.id
 
@@ -56,6 +61,15 @@ resource "supabase_settings" "puzzles" {
     external_azure_client_id = data.tfe_outputs.azure.nonsensitive_values.puzzles_client_id
     external_azure_secret    = data.tfe_outputs.azure.values.puzzles_client_secret
     external_azure_url       = "https://login.microsoftonline.com/common"
+
+    # Auth emails go out through Mailgun, from mg.joclegg.dev, instead of
+    # Supabase's own sender, which only emails project members.
+    smtp_host        = data.tfe_outputs.mailgun.nonsensitive_values.smtp_host
+    smtp_port        = "587"
+    smtp_user        = data.tfe_outputs.mailgun.nonsensitive_values.smtp_user
+    smtp_pass        = data.tfe_outputs.mailgun.values.smtp_password
+    smtp_admin_email = "no-reply@mg.joclegg.dev"
+    smtp_sender_name = "Puzzles"
 
     jwt_exp                               = 3600
     refresh_token_rotation_enabled        = true
