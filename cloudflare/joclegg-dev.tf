@@ -1,10 +1,41 @@
-# DNS for joclegg.dev. The domain was bought through Cloudflare Registrar,
-# which made the zone; this only manages its records.
+# joclegg.dev: bought through Cloudflare Registrar, which made the zone, then
+# imported. The registration itself (auto-renew, transfer lock) is set in the
+# dashboard: the provider has no resource for it.
 
-data "cloudflare_zone" "joclegg_dev" {
-  filter = {
-    name = "joclegg.dev"
+import {
+  to = cloudflare_zone.joclegg_dev
+  id = "a93c1ccba976649debf060219b51c786"
+}
+
+resource "cloudflare_zone" "joclegg_dev" {
+  account = {
+    id = "c23f0b5d99102cd197ffad7dbafd0a73"
   }
+  name = "joclegg.dev"
+  type = "full"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# Cloudflare is the registrar, so it publishes the DS record at the .dev
+# registry itself.
+resource "cloudflare_zone_dnssec" "joclegg_dev" {
+  zone_id = cloudflare_zone.joclegg_dev.id
+  status  = "active"
+}
+
+resource "cloudflare_zone_setting" "always_use_https" {
+  zone_id    = cloudflare_zone.joclegg_dev.id
+  setting_id = "always_use_https"
+  value      = "on"
+}
+
+resource "cloudflare_zone_setting" "min_tls_version" {
+  zone_id    = cloudflare_zone.joclegg_dev.id
+  setting_id = "min_tls_version"
+  value      = "1.2"
 }
 
 # Mailgun's records for mg.joclegg.dev: SPF, DKIM, the tracking CNAME and MX.
@@ -13,7 +44,7 @@ data "tfe_outputs" "mailgun" {
 }
 
 locals {
-  zone_id = data.cloudflare_zone.joclegg_dev.zone_id
+  zone_id = cloudflare_zone.joclegg_dev.id
 
   # Keyed by type and name, plus the content for MX, which has two records on
   # the same name.
