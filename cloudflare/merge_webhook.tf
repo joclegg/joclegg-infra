@@ -1,6 +1,6 @@
 # Tells a parent repository to move its submodules when one of their main
 # branches moves. github/webhooks.tf points each webhook here and reads the
-# secret from this workspace's outputs.
+# this workspace's outputs.
 
 variable "PUZZLES_DISPATCH_APP_CLIENT_ID" {
   description = "Client ID of the joclegg-puzzles-dispatch GitHub App."
