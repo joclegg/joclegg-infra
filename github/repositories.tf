@@ -5,6 +5,14 @@
 locals {
   repositories = {
     "puzzles" = {
+      submodules = [
+        "joclegg-infra",
+        "puzzles-android",
+        "puzzles-backend",
+        "puzzles-data",
+        "puzzles-ios",
+        "puzzles-web",
+      ]
       description = "Puzzles: the Android app, the website and their shared puzzle data, as submodules"
     }
     "puzzles-android" = {
