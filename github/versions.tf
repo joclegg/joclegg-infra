@@ -14,6 +14,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 6.13"
     }
+    tfe = {
+      source  = "hashicorp/tfe"
+      version = "~> 0.70"
+    }
   }
 }
 
@@ -21,4 +25,9 @@ terraform {
 # `gh auth token`.
 provider "github" {
   owner = "joclegg"
+}
+
+# Reads cloudflare/'s outputs. Signs in with TFE_TOKEN.
+provider "tfe" {
+  organization = "joclegg"
 }

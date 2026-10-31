@@ -1,9 +1,18 @@
 # Every repository on the joclegg account. The first 8 were made by hand and
-# imported; add a new one here and Terraform creates it.
+# imported; add a new one here and Terraform creates it. A repository with
+# submodules hears when they change: see webhooks.tf.
 
 locals {
   repositories = {
     "puzzles" = {
+      submodules = [
+        "joclegg-infra",
+        "puzzles-android",
+        "puzzles-backend",
+        "puzzles-data",
+        "puzzles-ios",
+        "puzzles-web",
+      ]
       description = "Puzzles: the Android app, the website and their shared puzzle data, as submodules"
     }
     "puzzles-android" = {
