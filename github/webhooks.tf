@@ -1,6 +1,6 @@
 # Each submodule tells the Worker in cloudflare/ when it's pushed to, and the
 # Worker tells the repository that lists it. A repository can be a submodule of
-# several. Each one listing submodules needs the joclegg-puzzles-dispatch GitHub
+# several. Each one listing submodules needs the joclegg-repo-dispatch GitHub
 # App installed and a workflow that handles submodule-merged.
 
 data "tfe_outputs" "cloudflare" {
