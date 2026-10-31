@@ -39,7 +39,6 @@ locals {
     }
     "cv" = {
       homepage_url    = "https://joclegg.github.io/cv/"
-      secret_scanning = false
       required_checks = ["build-and-test"]
       pages           = { build_type = "workflow" }
     }
@@ -54,13 +53,11 @@ module "repository" {
   source   = "../modules/repository"
   for_each = local.repositories
 
-  name                   = each.key
-  description            = lookup(each.value, "description", null)
-  homepage_url           = lookup(each.value, "homepage_url", null)
-  delete_branch_on_merge = true
-  secret_scanning        = lookup(each.value, "secret_scanning", true)
-  required_checks        = lookup(each.value, "required_checks", null)
-  pages                  = lookup(each.value, "pages", null)
+  name            = each.key
+  description     = lookup(each.value, "description", null)
+  homepage_url    = lookup(each.value, "homepage_url", null)
+  required_checks = lookup(each.value, "required_checks", null)
+  pages           = lookup(each.value, "pages", null)
 }
 
 # puzzles-infra was renamed joclegg-infra, as it manages the whole account.

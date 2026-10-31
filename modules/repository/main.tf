@@ -20,17 +20,6 @@ variable "homepage_url" {
   default = null
 }
 
-variable "delete_branch_on_merge" {
-  type    = bool
-  default = false
-}
-
-variable "secret_scanning" {
-  description = "Secret scanning and push protection."
-  type        = bool
-  default     = true
-}
-
 variable "required_checks" {
   description = "Checks main needs before merging, through a pull request. null leaves main unprotected."
   type        = list(string)
@@ -47,6 +36,7 @@ variable "pages" {
   default = null
 }
 
+# The base: every repository gets these settings. Only the variables above differ.
 resource "github_repository" "this" {
   name         = var.name
   description  = var.description
@@ -60,17 +50,17 @@ resource "github_repository" "this" {
   allow_merge_commit     = true
   allow_squash_merge     = true
   allow_rebase_merge     = true
-  delete_branch_on_merge = var.delete_branch_on_merge
+  delete_branch_on_merge = true
 
   # Deleting this resource archives the repository instead of deleting it.
   archive_on_destroy = true
 
   security_and_analysis {
     secret_scanning {
-      status = var.secret_scanning ? "enabled" : "disabled"
+      status = "enabled"
     }
     secret_scanning_push_protection {
-      status = var.secret_scanning ? "enabled" : "disabled"
+      status = "enabled"
     }
   }
 
