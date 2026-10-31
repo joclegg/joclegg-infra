@@ -79,8 +79,8 @@ jobs:
       # supabase/ signs in with the same token puzzles-backend uses.
       SUPABASE_ACCESS_TOKEN: ${{ matrix.root == 'supabase' && secrets.SUPABASE_ACCESS_TOKEN || '' }}
       # Values for github/secrets.tf, which copies them to the other repositories.
-      TF_VAR_PUZZLES_DISPATCH_APP_CLIENT_ID: ${{ matrix.root == 'github' && vars.PUZZLES_DISPATCH_APP_CLIENT_ID || '' }}
-      TF_VAR_PUZZLES_DISPATCH_APP_KEY: ${{ matrix.root == 'github' && secrets.PUZZLES_DISPATCH_APP_KEY || '' }}
+      TF_VAR_PUZZLES_DISPATCH_APP_CLIENT_ID: ${{ (matrix.root == 'github' || matrix.root == 'cloudflare') && vars.PUZZLES_DISPATCH_APP_CLIENT_ID || '' }}
+      TF_VAR_PUZZLES_DISPATCH_APP_KEY: ${{ (matrix.root == 'github' || matrix.root == 'cloudflare') && secrets.PUZZLES_DISPATCH_APP_KEY || '' }}
       TF_VAR_SUPABASE_ACCESS_TOKEN: ${{ matrix.root == 'github' && secrets.SUPABASE_ACCESS_TOKEN || '' }}
       TF_VAR_PUZZLES_KEYSTORE_BASE64: ${{ matrix.root == 'github' && secrets.PUZZLES_KEYSTORE_BASE64 || '' }}
       TF_VAR_PUZZLES_KEYSTORE_PASSWORD: ${{ matrix.root == 'github' && secrets.PUZZLES_KEYSTORE_PASSWORD || '' }}
