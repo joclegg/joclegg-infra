@@ -1,5 +1,5 @@
-# Tells joclegg/puzzles to move its submodules when a repository's main branch
-# moves. github/webhooks.tf points each repository's webhook here and reads the
+# Tells a parent repository to move its submodules when one of their main
+# branches moves. github/webhooks.tf points each webhook here and reads the
 # secret from this workspace's outputs.
 
 variable "PUZZLES_DISPATCH_APP_CLIENT_ID" {

@@ -1,6 +1,8 @@
-// Receives push webhooks from the repositories listed in github/webhooks.tf and
-// sends a repository_dispatch to each target when their main branch moves.
-const TARGETS = [{ repository: "joclegg/puzzles", event: "submodule-merged" }];
+// Receives push webhooks from the repositories in github/webhooks.tf at
+// /<parent>, and sends the parent a repository_dispatch when their main branch
+// moves.
+const OWNER = "joclegg";
+const EVENT = "submodule-merged";
 const MAIN = "refs/heads/main";
 const API = "https://api.github.com";
 const encoder = new TextEncoder();
@@ -21,9 +23,11 @@ export default {
     if (JSON.parse(body).ref !== MAIN) {
       return new Response("Ignored", { status: 202 });
     }
-    for (const { repository, event } of TARGETS) {
-      await dispatch(repository, event, env);
+    const parent = new URL(request.url).pathname.slice(1);
+    if (!/^[\w.-]+$/.test(parent)) {
+      return new Response("No parent", { status: 404 });
     }
+    await dispatch(`${OWNER}/${parent}`, EVENT, env);
     return new Response("Sent", { status: 200 });
   },
 };
