@@ -2,12 +2,12 @@
 # branches moves. github/webhooks.tf points each webhook here and reads the
 # secret from this workspace's outputs.
 
-variable "PUZZLES_DISPATCH_APP_CLIENT_ID" {
-  description = "Client ID of the joclegg-puzzles-dispatch GitHub App."
+variable "REPO_DISPATCH_APP_CLIENT_ID" {
+  description = "Client ID of the joclegg-repo-dispatch GitHub App."
   type        = string
 }
 
-variable "PUZZLES_DISPATCH_APP_KEY" {
+variable "REPO_DISPATCH_APP_KEY" {
   description = "Private key of that app, which the Worker turns into a 1-hour token."
   type        = string
   sensitive   = true
@@ -29,12 +29,12 @@ resource "cloudflare_workers_script" "merge_webhook" {
     {
       type = "plain_text"
       name = "APP_CLIENT_ID"
-      text = var.PUZZLES_DISPATCH_APP_CLIENT_ID
+      text = var.REPO_DISPATCH_APP_CLIENT_ID
     },
     {
       type = "secret_text"
       name = "APP_PRIVATE_KEY"
-      text = var.PUZZLES_DISPATCH_APP_KEY
+      text = var.REPO_DISPATCH_APP_KEY
     },
     {
       type = "secret_text"
