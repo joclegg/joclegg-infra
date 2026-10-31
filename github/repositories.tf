@@ -33,6 +33,9 @@ locals {
       description     = "Supabase backend for Puzzles score sync"
       required_checks = ["build-and-test"]
     }
+    "joclegg-actions" = {
+      description = "GitHub Actions shared by the joclegg repositories"
+    }
     "joclegg-infra" = {
       description     = "Terraform for everything the joclegg account runs on"
       required_checks = ["terraform"]
