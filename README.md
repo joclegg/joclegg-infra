@@ -32,7 +32,7 @@ Every secret is a GitHub Actions secret in this repository, stored once. `github
 | `CLOUDFLARE_API_TOKEN` | For `cloudflare/`: zone, zone settings, DNS and Workers Routes write on `joclegg.dev`, and Workers Scripts write on the account. Expires 29 October 2027. |
 | `SUPABASE_ACCESS_TOKEN` | Used by `supabase/`, and copied to puzzles-backend for pushing migrations. |
 | `PUZZLES_KEYSTORE_BASE64`, `PUZZLES_KEYSTORE_PASSWORD`, `PUZZLES_KEY_ALIAS`, `PUZZLES_KEY_PASSWORD` | The Android release keystore, base64-encoded, and its passwords. Copied to puzzles-android. Keep a copy outside GitHub: secrets can't be read back. |
-| `INFRA_GITHUB_TOKEN` | Fine-grained token for `github/`: all repositories, with Actions, Administration, Contents, Environments, Pages, Secrets and Variables write. A GitHub App can't create repositories on a personal account, so this is a token. It expires after a year. |
+| `INFRA_GITHUB_TOKEN` | Fine-grained token for `github/`: all repositories, with Actions, Administration, Contents, Environments, Pages, Secrets, Variables and Webhooks write. A GitHub App can't create repositories on a personal account, so this is a token. It expires after a year. |
 
 ## Running locally
 
