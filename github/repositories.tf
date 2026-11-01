@@ -13,10 +13,10 @@ locals {
         "puzzles-ios",
         "puzzles-web",
       ]
-      description = "Puzzles: the Android app, the website and their shared puzzle data, as submodules"
+      description = "Puzzles: the Android and iOS apps, the website, their backend, data and infrastructure, as submodules"
     }
     "puzzles-android" = {
-      description = "Offline puzzle games for Android: sudoku and solitaire"
+      description = "Android version of Puzzles: eight offline puzzle games"
       required_checks = [
         "Lint, unit tests, build",
         "Maestro e2e",
@@ -35,7 +35,8 @@ locals {
       pages           = { build_type = "workflow" }
     }
     "puzzles-data" = {
-      description = "Puzzle banks and word lists shared by puzzles-android and puzzles-web"
+      description     = "Puzzle banks and word lists shared by the Puzzles apps"
+      required_checks = ["duplicates"]
       # The apps download new banks from https://joclegg.github.io/puzzles-data/
       # so new puzzles don't need an app release.
       pages = { build_type = "workflow" }

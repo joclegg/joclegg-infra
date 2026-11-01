@@ -1,51 +1,57 @@
 # AGENTS.md
 
-Terraform for everything the joclegg account runs on. See `README.md` for what each folder manages and for every secret.
+## Structure
 
-## Stack
+Terraform for everything the joclegg account runs on. Each top-level folder with a `versions.tf` is its own root, with its own HCP Terraform workspace (`joclegg-<folder>`, local execution), planned and applied by GitHub Actions.
 
-- Terraform, with state in HCP Terraform (organisation `joclegg`, execution mode Local)
-- GitHub Actions runs every plan and apply
-- Cloudflare Workers in `cloudflare/workers/`, as plain JavaScript
+| Path | Purpose |
+| --- | --- |
+| `hcp/` | The HCP Terraform organisation and every workspace, this one's included. |
+| `azure/` | Microsoft Entra ID app registrations: "Sign in with Microsoft" for Puzzles, and the app Actions signs in as. |
+| `mailgun/` | Sending email from `mg.joclegg.dev`. Outputs its DNS records and SMTP login. |
+| `supabase/` | The Puzzles Supabase project and its auth settings. `templates/` holds the auth emails. Outputs the public API details. |
+| `cloudflare/` | The `joclegg.dev` zone, its DNS, and the Workers. Each Worker's script is in `workers/`. |
+| `github/` | Every repository: settings, `main` protection, Pages, submodule webhooks and Actions secrets. |
+| `modules/repository/` | The settings every repository shares. |
+| `modules/worker/` | A Cloudflare Worker: script, custom domains, cron schedules. |
+| `.github/workflows/terraform.yml` | Plans each changed root on pull requests; plans and applies on `main`, weekly, and by hand. Runs roots one at a time, in dependency order. |
+| `README.md` | What each root manages, and every secret. |
 
-## Commands
+Outputs flow `azure`, `mailgun` → `supabase`; `mailgun`, `supabase` → `cloudflare` → `github`.
 
-Run these in a folder, such as `github/`:
+## Conventions
 
-- `terraform fmt -recursive`: format
-- `terraform init -backend=false`, then `terraform validate`: check without touching state
-- `terraform plan`: see `README.md` for signing in
-
-## Rules
-
-### General
-
-- MUST keep `terraform fmt -check -recursive` and `terraform validate` passing in every folder.
-- MUST only plan locally. MUST NOT run `terraform apply` by hand: merging to `main` applies, as `README.md` describes.
+### Checks and applying
+- MUST keep `terraform fmt -check -recursive` passing, and `terraform validate` passing in every root (`terraform init -backend=false` first).
+- MUST only plan locally. MUST NOT run `terraform apply` by hand: merging to `main` applies.
 - MUST read the pull request's plan before asking for a merge, and call out anything destroyed or replaced.
 - MUST commit `.terraform.lock.hcl` with Linux and macOS hashes when providers change: `terraform providers lock -platform=linux_amd64 -platform=darwin_arm64`.
 
-### Folders
+### Code
+- MUST use snake_case for resource, data, variable, local and output names; MUST name a module's single main resource `this`.
+- MUST give every variable a `type`, and a `description` unless its name says it all.
+- MUST mark secret variables and outputs `sensitive = true`.
+- MUST constrain provider versions in `versions.tf` with `~>`; MUST NOT pin versions inside modules.
+- MUST put settings shared by more than one resource in a module under `modules/`, and give each caller only what truly differs.
+- MUST make every Cloudflare Worker a `modules/worker` call, with its script in `cloudflare/workers/`.
+- MUST explain why, not what, in comments, above the block they describe.
 
-- MUST give each new top-level folder a `versions.tf`, and its workspace in `hcp/hcp.tf`.
-- MUST pass values between folders with outputs read through `tfe_outputs`, never by copying them.
-- MUST add the folder that writes an output first, in a pull request before the one that reads it, because a plan can't read an output that hasn't been applied.
-- MUST NOT make folders read each other's outputs in a cycle.
+### Roots
+- MUST give each new root a `versions.tf`, its workspace in `hcp/hcp.tf`, and its place in the root order in `.github/workflows/terraform.yml`.
+- MUST pass values between roots with outputs read through `tfe_outputs`. MUST NOT copy a value another root owns.
+- MUST add an output in a pull request before the one that reads it: a plan can't read an output that hasn't been applied.
+- MUST NOT make roots read each other's outputs in a cycle.
 
 ### Repositories
-
-- MUST add every repository to `github/repositories.tf`.
-- MUST put settings every repository shares in `modules/repository`, and give a repository only what truly differs.
-- MUST list a repository's submodules under its `submodules`, so each gets a webhook through `github/webhooks.tf`.
+- MUST add every repository to `github/repositories.tf`, and list its submodules under `submodules`.
+- MUST require each repository's CI checks on `main` through `required_checks`.
 - MUST NOT remove `prevent_destroy` from a repository or the HCP resources.
 
 ### Secrets
-
-- MUST store each secret once, as an Actions secret here, and pass it to only the folder that uses it in `.github/workflows/terraform.yml`.
+- MUST store each secret once, as an Actions secret here, and pass it only to the root that uses it.
 - MUST add each new secret to `README.md`.
-- MUST NOT commit secret values or print them in outputs without `sensitive = true`.
+- MUST NOT commit secret values.
 
-### Moving and importing
-
+### State
 - MUST use `moved` blocks when renaming or moving a resource, so it isn't destroyed and recreated.
 - MUST use `import` blocks for anything made by hand.

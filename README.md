@@ -1,10 +1,13 @@
 # joclegg-infra
 
-Terraform for everything the joclegg account runs on: HCP Terraform, every GitHub repository, and the Puzzles apps' services. Each top-level folder is its own root, with its own state in an HCP Terraform workspace (organisation `joclegg`, execution mode Local), so every run happens in GitHub Actions.
+Everything the joclegg account runs on, as Terraform: the GitHub repositories, the `joclegg.dev` domain and its Cloudflare Workers, email through Mailgun, "Sign in with Microsoft", the Puzzles Supabase project, and HCP Terraform itself.
+
+Each top-level folder is its own root, with its own state in an HCP Terraform workspace. HCP only stores the state: every plan and apply runs in GitHub Actions.
 
 - Pull requests: format check, validate and plan for each changed folder. The plans are in the run summary.
 - Merges to `main`: plan, then apply, for each changed folder.
 - Every Monday, and when run by hand: plan and apply every folder, which picks up the Azure secret rotation and shows drift.
+- Folders run one at a time, each after the folders whose outputs it reads.
 - The `terraform` check passes when every folder that ran passed.
 
 ## Folders
@@ -13,12 +16,12 @@ Terraform for everything the joclegg account runs on: HCP Terraform, every GitHu
 | --- | --- | --- |
 | `hcp/` | `joclegg-hcp` | The HCP Terraform organisation and workspaces. `joclegg-hcp` was made by hand and imported; the organisation and it have `prevent_destroy`, because it holds this state. |
 | `azure/` | `joclegg-azure` | The `Puzzles` Microsoft Entra ID app registration, for "Sign in with Microsoft": personal and work accounts, the Supabase callback, the `email` and `xms_edov` claims, and a client secret replaced every 180 days. Signs in as `joclegg-infra-github`, which was made by hand with GitHub OIDC credentials and `Application.ReadWrite.OwnedBy`, made an owner of itself, and imported: its federated credentials and permissions are managed here too, but admin consent is granted by hand. |
-| `cloudflare/` | `joclegg-cloudflare` | The `joclegg.dev` zone (imported), DNSSEC, always-HTTPS, minimum TLS 1.2, and its DNS records: Mailgun's records from `mailgun/`'s outputs, DMARC, and an SPF record saying the root domain sends no email. Also the `puzzles-keep-alive` Worker (`workers/`), whose daily cron trigger calls puzzles-backend's `keep_alive()` so the free Supabase project never pauses. The `puzzles-daily-word` Worker, which serves Five Letters' second daily word to the Puzzles apps at `puzzles-daily.joclegg.dev/word/<yyyy-mm-dd>`, with its Wordle number, read from a public answers page and cached a day. And the `joclegg-pages` Worker, which serves the CV at `joclegg.dev` and Puzzles at `puzzles.joclegg.dev` by fetching them from GitHub Pages, so their `joclegg.github.io` addresses keep working too. The registration (bought through Cloudflare Registrar; auto-renew and transfer lock) is set in the dashboard: the provider has no resource for it. |
+| `cloudflare/` | `joclegg-cloudflare` | The `joclegg.dev` zone (imported), DNSSEC, always-HTTPS, a minimum TLS version, and its DNS records: Mailgun's records from `mailgun/`'s outputs, DMARC, and an SPF record saying the root domain sends no email. Every Worker is a `modules/worker` call, with its script in `workers/`. The `puzzles-keep-alive` Worker, whose daily cron trigger calls puzzles-backend's `keep_alive()` so the free Supabase project never pauses. The `puzzles-daily-word` Worker, which serves Five Letters' second daily word to the Puzzles apps at `puzzles-daily.joclegg.dev/word/<yyyy-mm-dd>`, with its Wordle number, read from a public answers page and cached a day. And the `joclegg-pages` Worker, which serves the CV at `joclegg.dev` and Puzzles at `puzzles.joclegg.dev` by fetching them from GitHub Pages, so their `joclegg.github.io` addresses keep working too. The registration (bought through Cloudflare Registrar; auto-renew and transfer lock) is set in the dashboard: the provider has no resource for it. |
 | `github/` | `joclegg-github` | Every repository on the account: settings, `main` protection and Pages, through `modules/repository`. All imported; repositories have `prevent_destroy` and are archived, not deleted, if removed. |
 | `mailgun/` | `joclegg-mailgun` | Sending email from `mg.joclegg.dev` through Mailgun (community provider `wgebis/mailgun`; there's no official one), and the SMTP login Supabase uses. Outputs the DNS records `cloudflare/` publishes. |
-| `supabase/` | `joclegg-supabase` | The Puzzles Supabase project and its auth settings: site URL, redirect URLs, sign-ups, email sign-in (a magic link with a code), the Google provider (not its secret), the Azure provider (client ID and secret from `azure/`'s outputs), SMTP through Mailgun (from `mailgun/`'s outputs), and token lifetimes. Imported. The email subjects and templates are in `supabase/templates/`. Only the auth keys listed are managed; the database schema stays in puzzles-backend. |
+| `supabase/` | `joclegg-supabase` | The Puzzles Supabase project and its auth settings, and outputs for its public API address and publishable key: site URL, redirect URLs, sign-ups, email sign-in (a magic link with a code), the Google provider (not its secret), the Azure provider (client ID and secret from `azure/`'s outputs), SMTP through Mailgun (from `mailgun/`'s outputs), and token lifetimes. Imported. The email subjects and templates are in `supabase/templates/`. Only the auth keys listed are managed; the database schema stays in puzzles-backend. |
 
-`modules/` will hold shared modules; a change there runs every folder.
+`modules/` holds the shared modules: `repository` for every GitHub repository, `worker` for every Cloudflare Worker. A change there runs every folder.
 
 ## Secrets
 
