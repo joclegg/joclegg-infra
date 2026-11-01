@@ -26,6 +26,12 @@ locals {
     }
     "puzzles-ios" = {
       description = "iOS version of Puzzles: eight offline puzzle games"
+      required_checks = [
+        "Lint, unit tests, build",
+        "Maestro e2e (part 1 of 3)",
+        "Maestro e2e (part 2 of 3)",
+        "Maestro e2e (part 3 of 3)",
+      ]
     }
     "puzzles-web" = {
       description     = "Web version of Puzzles: eight offline puzzle games in React and TypeScript"
@@ -65,7 +71,7 @@ module "repository" {
   name            = each.key
   description     = lookup(each.value, "description", null)
   homepage_url    = lookup(each.value, "homepage_url", null)
-  required_checks = lookup(each.value, "required_checks", null)
+  required_checks = lookup(each.value, "required_checks", [])
   pages           = lookup(each.value, "pages", null)
 }
 

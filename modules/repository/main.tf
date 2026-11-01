@@ -21,9 +21,9 @@ variable "homepage_url" {
 }
 
 variable "required_checks" {
-  description = "Checks main needs before merging, through a pull request. null leaves main unprotected."
+  description = "Checks main needs to pass before merging. Every repository protects main either way."
   type        = list(string)
-  default     = null
+  default     = []
 }
 
 variable "pages" {
@@ -86,9 +86,8 @@ resource "github_repository_pages" "this" {
   }
 }
 
+# Part of the base: every repository's main only changes through a pull request.
 resource "github_branch_protection" "main" {
-  count = var.required_checks == null ? 0 : 1
-
   repository_id = github_repository.this.node_id
   pattern       = "main"
 
@@ -99,6 +98,12 @@ resource "github_branch_protection" "main" {
   required_pull_request_reviews {
     required_approving_review_count = 0
   }
+}
+
+# Branch protection used to be optional, so the protected repositories have it at [0].
+moved {
+  from = github_branch_protection.main[0]
+  to   = github_branch_protection.main
 }
 
 output "name" {
