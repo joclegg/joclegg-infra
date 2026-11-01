@@ -1,12 +1,12 @@
 // Serves the Five Letters "Daily puzzle 2" word for a day:
-//   GET /word/2026-10-31 -> {"date":"2026-10-31","word":"slate"}
+//   GET /word/2026-10-31 -> {"date":"2026-10-31","word":"slate","number":1960}
 // It reads the word from a public answers page and keeps each day's word in
 // Cloudflare's cache, so the source is asked at most about once a day per
 // data centre. A day the source doesn't list yet is a 404.
 
 const SOURCE_URL = "https://word.tips/todays-wordle-answer/";
 const DAY = /^\/word\/(\d{4}-\d{2}-\d{2})$/;
-const ENTRY = /date:"(\d{4}-\d{2}-\d{2})",number:\d+,answer:"([A-Za-z]{5})"/g;
+const ENTRY = /date:"(\d{4}-\d{2}-\d{2})",number:(\d+),answer:"([A-Za-z]{5})"/g;
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const HEADERS = {
   "access-control-allow-origin": "*",
@@ -22,8 +22,8 @@ function reply(status, body, maxAge) {
 
 export function readWords(html) {
   const words = new Map();
-  for (const [, date, word] of html.matchAll(ENTRY)) {
-    words.set(date, word.toLowerCase());
+  for (const [, date, number, word] of html.matchAll(ENTRY)) {
+    words.set(date, { word: word.toLowerCase(), number: Number(number) });
   }
   return words;
 }
@@ -59,11 +59,11 @@ export default {
     if (!source.ok) {
       return reply(502, { error: "source unavailable" }, 0);
     }
-    const word = readWords(await source.text()).get(date);
-    if (!word) {
+    const entry = readWords(await source.text()).get(date);
+    if (!entry) {
       return reply(404, { error: "not found" }, 300);
     }
-    const response = reply(200, { date, word }, 86400);
+    const response = reply(200, { date, ...entry }, 86400);
     ctx.waitUntil(cache.put(key, response.clone()));
     return response;
   },
