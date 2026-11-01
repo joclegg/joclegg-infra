@@ -19,18 +19,14 @@ locals {
       description = "Offline puzzle games for Android: sudoku and solitaire"
       required_checks = [
         "Lint, unit tests, build",
-        "Maestro e2e (part 1 of 3)",
-        "Maestro e2e (part 2 of 3)",
-        "Maestro e2e (part 3 of 3)",
+        "Maestro e2e",
       ]
     }
     "puzzles-ios" = {
       description = "iOS version of Puzzles: eight offline puzzle games"
       required_checks = [
-        "Lint, unit tests, build",
-        "Maestro e2e (part 1 of 3)",
-        "Maestro e2e (part 2 of 3)",
-        "Maestro e2e (part 3 of 3)",
+        "Lint, unit tests",
+        "Maestro e2e",
       ]
     }
     "puzzles-web" = {
