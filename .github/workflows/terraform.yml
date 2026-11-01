@@ -78,9 +78,10 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ matrix.root == 'cloudflare' && secrets.CLOUDFLARE_API_TOKEN || '' }}
       # supabase/ signs in with the same token puzzles-backend uses.
       SUPABASE_ACCESS_TOKEN: ${{ matrix.root == 'supabase' && secrets.SUPABASE_ACCESS_TOKEN || '' }}
-      # Values for github/secrets.tf, which copies them to the other repositories.
+      # The merge webhook Worker's GitHub App, for cloudflare/merge_webhook.tf.
       TF_VAR_REPO_DISPATCH_APP_CLIENT_ID: ${{ matrix.root == 'cloudflare' && vars.REPO_DISPATCH_APP_CLIENT_ID || '' }}
       TF_VAR_REPO_DISPATCH_APP_KEY: ${{ matrix.root == 'cloudflare' && secrets.REPO_DISPATCH_APP_KEY || '' }}
+      # Values for github/secrets.tf, which copies them to the other repositories.
       TF_VAR_SUPABASE_ACCESS_TOKEN: ${{ matrix.root == 'github' && secrets.SUPABASE_ACCESS_TOKEN || '' }}
       TF_VAR_PUZZLES_KEYSTORE_BASE64: ${{ matrix.root == 'github' && secrets.PUZZLES_KEYSTORE_BASE64 || '' }}
       TF_VAR_PUZZLES_KEYSTORE_PASSWORD: ${{ matrix.root == 'github' && secrets.PUZZLES_KEYSTORE_PASSWORD || '' }}
