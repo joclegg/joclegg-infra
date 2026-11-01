@@ -36,7 +36,13 @@ jobs:
           EVENT: ${{ github.event_name }}
           BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: |
-          all=$(ls -d */versions.tf 2>/dev/null | xargs -n1 dirname | grep -vx modules || true)
+          # Roots run one at a time in this order, so each one runs after the
+          # roots whose outputs it reads: supabase/ reads azure/ and mailgun/,
+          # cloudflare/ reads mailgun/, and github/ reads cloudflare/. A new
+          # root not listed here runs last.
+          order="hcp azure mailgun supabase cloudflare github"
+          found=$(ls -d */versions.tf 2>/dev/null | xargs -n1 dirname | grep -vx modules || true)
+          all=$(for r in $order; do grep -qx "$r" <<<"$found" && echo "$r"; done; grep -vxF -f <(tr ' ' '\n' <<<"$order") <<<"$found" || true)
           if [ "$EVENT" = workflow_dispatch ] || [ "$EVENT" = schedule ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
             roots=$all
           else
@@ -65,23 +71,28 @@ jobs:
       # GitHub's OIDC token, for azure/ to sign in to Microsoft Entra ID.
       id-token: write
     env:
+      # Every root stores its state in HCP Terraform and reads other roots' outputs.
       TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
       TFE_TOKEN: ${{ secrets.TF_API_TOKEN }}
-      # Fine-grained token for the github provider. Only github/ uses it.
-      GITHUB_TOKEN: ${{ matrix.root == 'github' && secrets.INFRA_GITHUB_TOKEN || '' }}
+      # Each value below is set only for the root that needs it, so no root
+      # sees another's credentials.
+      #
       # azure/ signs in as the joclegg-infra-github app registration with
       # GitHub's OIDC token. Neither ID is secret.
       ARM_USE_OIDC: ${{ matrix.root == 'azure' && 'true' || '' }}
       ARM_CLIENT_ID: ${{ matrix.root == 'azure' && vars.AZURE_CLIENT_ID || '' }}
       ARM_TENANT_ID: ${{ matrix.root == 'azure' && vars.AZURE_TENANT_ID || '' }}
+      # mailgun/
       MAILGUN_API_KEY: ${{ matrix.root == 'mailgun' && secrets.MAILGUN_API_KEY || '' }}
-      CLOUDFLARE_API_TOKEN: ${{ matrix.root == 'cloudflare' && secrets.CLOUDFLARE_API_TOKEN || '' }}
       # supabase/ signs in with the same token puzzles-backend uses.
       SUPABASE_ACCESS_TOKEN: ${{ matrix.root == 'supabase' && secrets.SUPABASE_ACCESS_TOKEN || '' }}
-      # The merge webhook Worker's GitHub App, for cloudflare/merge_webhook.tf.
+      # cloudflare/, plus the merge webhook Worker's GitHub App.
+      CLOUDFLARE_API_TOKEN: ${{ matrix.root == 'cloudflare' && secrets.CLOUDFLARE_API_TOKEN || '' }}
       TF_VAR_REPO_DISPATCH_APP_CLIENT_ID: ${{ matrix.root == 'cloudflare' && vars.REPO_DISPATCH_APP_CLIENT_ID || '' }}
       TF_VAR_REPO_DISPATCH_APP_KEY: ${{ matrix.root == 'cloudflare' && secrets.REPO_DISPATCH_APP_KEY || '' }}
-      # Values for github/secrets.tf, which copies them to the other repositories.
+      # github/: a fine-grained token for the provider, and the values
+      # github/secrets.tf copies to the other repositories.
+      GITHUB_TOKEN: ${{ matrix.root == 'github' && secrets.INFRA_GITHUB_TOKEN || '' }}
       TF_VAR_SUPABASE_ACCESS_TOKEN: ${{ matrix.root == 'github' && secrets.SUPABASE_ACCESS_TOKEN || '' }}
       TF_VAR_PUZZLES_KEYSTORE_BASE64: ${{ matrix.root == 'github' && secrets.PUZZLES_KEYSTORE_BASE64 || '' }}
       TF_VAR_PUZZLES_KEYSTORE_PASSWORD: ${{ matrix.root == 'github' && secrets.PUZZLES_KEYSTORE_PASSWORD || '' }}

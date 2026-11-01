@@ -3,16 +3,14 @@
 # depend on GitHub activity, unlike a scheduled workflow, which GitHub turns
 # off after 60 days without commits.
 
-locals {
-  account_id = cloudflare_zone.joclegg_dev.account.id
-}
+module "puzzles_keep_alive" {
+  source     = "../modules/worker"
+  account_id = local.account_id
+  zone_id    = local.zone_id
 
-resource "cloudflare_workers_script" "puzzles_keep_alive" {
-  account_id         = local.account_id
-  script_name        = "puzzles-keep-alive"
-  content            = file("${path.module}/workers/puzzles-keep-alive.js")
-  main_module        = "puzzles-keep-alive.js"
-  compatibility_date = "2026-10-01"
+  name      = "puzzles-keep-alive"
+  file      = "${path.module}/workers/puzzles-keep-alive.js"
+  schedules = ["17 6 * * *"]
 
   # The project URL and publishable key are public: both apps ship them.
   bindings = [
@@ -29,10 +27,12 @@ resource "cloudflare_workers_script" "puzzles_keep_alive" {
   ]
 }
 
-resource "cloudflare_workers_cron_trigger" "puzzles_keep_alive" {
-  account_id  = local.account_id
-  script_name = cloudflare_workers_script.puzzles_keep_alive.script_name
-  schedules = [
-    { cron = "17 6 * * *" },
-  ]
+moved {
+  from = cloudflare_workers_script.puzzles_keep_alive
+  to   = module.puzzles_keep_alive.cloudflare_workers_script.this
+}
+
+moved {
+  from = cloudflare_workers_cron_trigger.puzzles_keep_alive
+  to   = module.puzzles_keep_alive.cloudflare_workers_cron_trigger.this[0]
 }

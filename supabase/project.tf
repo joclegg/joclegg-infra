@@ -97,3 +97,13 @@ resource "supabase_settings" "puzzles" {
     { for name, subject in local.email_subjects : "mailer_templates_${name}_content" => file("${path.module}/templates/${name}.html") },
   ))
 }
+
+# The project's public API address and publishable key: both are in every app,
+# so neither is secret. Read by anything else that calls the project.
+output "api_url" {
+  value = "https://${supabase_project.puzzles.id}.supabase.co"
+}
+
+output "publishable_key" {
+  value = "sb_publishable_gQgbll0ElIbV41OtkvuXlQ_yUegn2hH"
+}

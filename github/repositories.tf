@@ -39,7 +39,7 @@ locals {
       required_checks = ["duplicates"]
       # The apps download new banks from https://joclegg.github.io/puzzles-data/
       # so new puzzles don't need an app release.
-      pages           = { build_type = "workflow" }
+      pages = { build_type = "workflow" }
     }
     "puzzles-backend" = {
       description     = "Supabase backend for Puzzles score sync"

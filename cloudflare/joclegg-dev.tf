@@ -44,7 +44,8 @@ data "tfe_outputs" "mailgun" {
 }
 
 locals {
-  zone_id = cloudflare_zone.joclegg_dev.id
+  account_id = cloudflare_zone.joclegg_dev.account.id
+  zone_id    = cloudflare_zone.joclegg_dev.id
 
   # Keyed by type and name, plus the content for MX, which has two records on
   # the same name.
