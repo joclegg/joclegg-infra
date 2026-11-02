@@ -70,6 +70,9 @@ module "repository" {
   homepage_url    = lookup(each.value, "homepage_url", null)
   required_checks = lookup(each.value, "required_checks", [])
   pages           = lookup(each.value, "pages", null)
+
+  # update-submodules.yml merges each submodule move through a pull request.
+  actions_open_pull_requests = length(lookup(each.value, "submodules", [])) > 0
 }
 
 # puzzles-infra was renamed joclegg-infra, as it manages the whole account.

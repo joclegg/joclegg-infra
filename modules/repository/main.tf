@@ -26,6 +26,12 @@ variable "required_checks" {
   default     = []
 }
 
+variable "actions_open_pull_requests" {
+  description = "Whether Actions may open and approve pull requests, for workflows that change main themselves."
+  type        = bool
+  default     = false
+}
+
 variable "pages" {
   description = "GitHub Pages: build_type is workflow (built by Actions) or legacy (served from branch and path)."
   type = object({
@@ -84,6 +90,15 @@ resource "github_repository_pages" "this" {
       path   = source.value.path
     }
   }
+}
+
+# A workflow that changes main has to go through a pull request like everyone
+# else, and GitHub stops Actions opening one unless this allows it.
+resource "github_workflow_repository_permissions" "this" {
+  count = var.actions_open_pull_requests ? 1 : 0
+
+  repository                       = github_repository.this.name
+  can_approve_pull_request_reviews = true
 }
 
 # Part of the base: every repository's main only changes through a pull request.
