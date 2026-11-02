@@ -25,6 +25,9 @@ export default {
       method: request.method,
       headers: request.headers,
       redirect: "manual",
+      // Without this every request goes through to GitHub. Caching at the
+      // edge keeps GitHub's own max-age, so a deploy shows up just as fast.
+      cf: { cacheEverything: true },
     });
 
     // GitHub redirects folders without a trailing slash to joclegg.github.io:
