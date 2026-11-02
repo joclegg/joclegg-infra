@@ -93,11 +93,14 @@ resource "github_repository_pages" "this" {
 }
 
 # A workflow that changes main has to go through a pull request like everyone
-# else, and GitHub stops Actions opening one unless this allows it.
+# else, and GitHub stops Actions opening one unless this allows it. GitHub
+# requires the default token permissions alongside: read, its own default, as
+# each workflow asks for what it needs.
 resource "github_workflow_repository_permissions" "this" {
   count = var.actions_open_pull_requests ? 1 : 0
 
   repository                       = github_repository.this.name
+  default_workflow_permissions     = "read"
   can_approve_pull_request_reviews = true
 }
 
