@@ -40,7 +40,7 @@ jobs:
           # roots whose outputs it reads: supabase/ reads azure/ and mailgun/,
           # cloudflare/ reads mailgun/, and github/ reads cloudflare/. A new
           # root not listed here runs last.
-          order="hcp azure mailgun supabase cloudflare github"
+          order="hcp azure mailgun supabase google cloudflare github"
           found=$(ls -d */versions.tf 2>/dev/null | xargs -n1 dirname | grep -vx modules || true)
           all=$(for r in $order; do grep -qx "$r" <<<"$found" && echo "$r"; done; grep -vxF -f <(tr ' ' '\n' <<<"$order") <<<"$found" || true)
           if [ "$EVENT" = workflow_dispatch ] || [ "$EVENT" = schedule ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
@@ -68,7 +68,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      # GitHub's OIDC token, for azure/ to sign in to Microsoft Entra ID.
+      # GitHub's OIDC token, for azure/ to sign in to Microsoft Entra ID and
+      # google/ to sign in to Google Cloud.
       id-token: write
     env:
       # Every root stores its state in HCP Terraform and reads other roots' outputs.
@@ -106,6 +107,14 @@ jobs:
         working-directory: ${{ matrix.root }}
     steps:
       - uses: actions/checkout@v7
+      # google/ signs in as the terraform service account through Workload
+      # Identity Federation. Neither value is secret. Both were made by hand
+      # and are imported in google/bootstrap.tf.
+      - if: matrix.root == 'google'
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/173393208059/locations/global/workloadIdentityPools/github/providers/github
+          service_account: terraform@puzzles-513020.iam.gserviceaccount.com
       - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: 1.17.1
