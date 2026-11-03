@@ -38,8 +38,8 @@ jobs:
         run: |
           # Roots run one at a time in this order, so each one runs after the
           # roots whose outputs it reads: supabase/ reads azure/ and mailgun/,
-          # cloudflare/ reads mailgun/, and github/ reads cloudflare/. A new
-          # root not listed here runs last.
+          # cloudflare/ reads mailgun/, and github/ reads cloudflare/ and
+          # google/. A new root not listed here runs last.
           order="hcp azure mailgun supabase google cloudflare github"
           found=$(ls -d */versions.tf 2>/dev/null | xargs -n1 dirname | grep -vx modules || true)
           all=$(for r in $order; do grep -qx "$r" <<<"$found" && echo "$r"; done; grep -vxF -f <(tr ' ' '\n' <<<"$order") <<<"$found" || true)
