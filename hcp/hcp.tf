@@ -38,6 +38,7 @@ locals {
     azure      = "The Microsoft Entra ID app registrations, from azure/ in joclegg/joclegg-infra."
     cloudflare = "The joclegg.dev domain's DNS on Cloudflare, from cloudflare/ in joclegg/joclegg-infra."
     github     = "Every repository on the joclegg GitHub account, from github/ in joclegg/joclegg-infra."
+    google     = "The Puzzles Google Cloud project: Workload Identity Federation for GitHub Actions and Google Play publishing, from google/ in joclegg/joclegg-infra."
     mailgun    = "Sending email from joclegg.dev through Mailgun, from mailgun/ in joclegg/joclegg-infra."
     supabase   = "The Puzzles Supabase project and its auth settings, from supabase/ in joclegg/joclegg-infra."
   }
