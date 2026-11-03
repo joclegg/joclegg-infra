@@ -11,6 +11,7 @@ Terraform for everything the joclegg account runs on. Each top-level folder with
 | `mailgun/` | Sending email from `mg.joclegg.dev`. Outputs its DNS records and SMTP login. |
 | `supabase/` | The Puzzles Supabase project and its auth settings. `templates/` holds the auth emails. Outputs the public API details. |
 | `cloudflare/` | The `joclegg.dev` zone, its DNS, and the Workers. Each Worker's script is in `workers/`. |
+| `google/` | The Puzzles Google Cloud project: Workload Identity Federation for Actions, and the Google Play publishing service account. |
 | `github/` | Every repository: settings, `main` protection, Pages, submodule webhooks and Actions secrets. |
 | `modules/repository/` | The settings every repository shares. |
 | `modules/worker/` | A Cloudflare Worker: script, custom domains, cron schedules. |
