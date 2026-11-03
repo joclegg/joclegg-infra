@@ -12,13 +12,13 @@ Terraform for everything the joclegg account runs on. Each top-level folder with
 | `supabase/` | The Puzzles Supabase project and its auth settings. `templates/` holds the auth emails. Outputs the public API details. |
 | `cloudflare/` | The `joclegg.dev` zone, its DNS, and the Workers. Each Worker's script is in `workers/`. |
 | `google/` | The Puzzles Google Cloud project: Workload Identity Federation for Actions, and the Google Play publishing service account. |
-| `github/` | Every repository: settings, `main` protection, Pages, submodule webhooks and Actions secrets. |
+| `github/` | Every repository: settings, `main` protection, Pages, submodule webhooks, Actions secrets and variables. |
 | `modules/repository/` | The settings every repository shares. |
 | `modules/worker/` | A Cloudflare Worker: script, custom domains, cron schedules. |
 | `.github/workflows/terraform.yml` | Plans each changed root on pull requests; plans and applies on `main`, weekly, and by hand. Runs roots one at a time, in dependency order. |
 | `README.md` | What each root manages, and every secret. |
 
-Outputs flow `azure`, `mailgun` → `supabase`; `mailgun`, `supabase` → `cloudflare` → `github`.
+Outputs flow `azure`, `mailgun` → `supabase`; `mailgun`, `supabase` → `cloudflare` → `github`; `google` → `github`.
 
 ## Conventions
 
