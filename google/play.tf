@@ -7,11 +7,12 @@ resource "google_service_account" "play_publisher" {
 }
 
 # Only workflows running on puzzles-android's main branch, which is where
-# releases are published from.
+# releases are published from. GitHub's OIDC subjects use immutable IDs:
+# joclegg is 30325082 and puzzles-android is 1433281774.
 resource "google_service_account_iam_member" "play_publisher_github" {
   service_account_id = google_service_account.play_publisher.name
   role               = "roles/iam.workloadIdentityUser"
-  member             = "principal://iam.googleapis.com/${local.pool_name}/subject/repo:joclegg/puzzles-android:ref:refs/heads/main"
+  member             = "principal://iam.googleapis.com/${local.pool_name}/subject/repo:joclegg@30325082/puzzles-android@1433281774:ref:refs/heads/main"
 }
 
 output "workload_identity_provider" {
