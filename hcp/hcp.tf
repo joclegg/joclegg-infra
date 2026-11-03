@@ -65,3 +65,15 @@ resource "tfe_workspace_settings" "folder" {
   workspace_id   = tfe_workspace.folder[each.key].id
   execution_mode = "local"
 }
+
+# The google/ root's first pull request plan made joclegg-google before this
+# file did: HCP Terraform creates a missing workspace when a root initialises.
+import {
+  to = tfe_workspace.folder["google"]
+  id = "joclegg/joclegg-google"
+}
+
+import {
+  to = tfe_workspace_settings.folder["google"]
+  id = "joclegg/joclegg-google"
+}
