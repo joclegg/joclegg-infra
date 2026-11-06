@@ -7,6 +7,7 @@ const ORIGIN = "https://joclegg.github.io";
 const SITES = {
   "joclegg.dev": "/cv",
   "puzzles.joclegg.dev": "/puzzles-web",
+  "actions.joclegg.dev": "/actions-dashboard",
 };
 
 export default {

@@ -1,4 +1,5 @@
-# joclegg.dev serves the CV and puzzles.joclegg.dev serves Puzzles, through a
+# joclegg.dev serves the CV, puzzles.joclegg.dev serves Puzzles and
+# actions.joclegg.dev serves actions-dashboard, through a
 # Worker that fetches them from GitHub Pages. GitHub's own custom domains
 # would redirect joclegg.github.io/cv/ and joclegg.github.io/puzzles-web/ to
 # the new addresses; this keeps both addresses serving. The sites stay as set
@@ -11,7 +12,7 @@ module "joclegg_pages" {
 
   name      = "joclegg-pages"
   file      = "${path.module}/workers/joclegg-pages.js"
-  hostnames = ["joclegg.dev", "puzzles.joclegg.dev"]
+  hostnames = ["joclegg.dev", "puzzles.joclegg.dev", "actions.joclegg.dev"]
 }
 
 moved {
