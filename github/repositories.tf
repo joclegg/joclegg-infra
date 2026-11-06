@@ -54,6 +54,12 @@ locals {
       required_checks = ["build-and-test"]
       pages           = { build_type = "workflow" }
     }
+    "actions-dashboard" = {
+      description     = "Every GitHub Actions run across a user's or organisation's repositories, on one page"
+      homepage_url    = "https://actions.joclegg.dev/"
+      required_checks = ["build-and-test"]
+      pages           = { build_type = "workflow" }
+    }
     "joclegg.github.io" = {
       description = "Root of joclegg.github.io"
       pages       = { build_type = "legacy" }
