@@ -91,6 +91,8 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ matrix.root == 'cloudflare' && secrets.CLOUDFLARE_API_TOKEN || '' }}
       TF_VAR_REPO_DISPATCH_APP_CLIENT_ID: ${{ matrix.root == 'cloudflare' && vars.REPO_DISPATCH_APP_CLIENT_ID || '' }}
       TF_VAR_REPO_DISPATCH_APP_KEY: ${{ matrix.root == 'cloudflare' && secrets.REPO_DISPATCH_APP_KEY || '' }}
+      TF_VAR_ACTIONS_DASHBOARD_APP_CLIENT_ID: ${{ matrix.root == 'cloudflare' && vars.ACTIONS_DASHBOARD_APP_CLIENT_ID || '' }}
+      TF_VAR_ACTIONS_DASHBOARD_APP_CLIENT_SECRET: ${{ matrix.root == 'cloudflare' && secrets.ACTIONS_DASHBOARD_APP_CLIENT_SECRET || '' }}
       # github/: a fine-grained token for the provider, and the values
       # github/secrets.tf copies to the other repositories.
       GITHUB_TOKEN: ${{ matrix.root == 'github' && secrets.INFRA_GITHUB_TOKEN || '' }}
