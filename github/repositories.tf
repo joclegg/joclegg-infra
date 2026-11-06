@@ -30,6 +30,8 @@ locals {
       ]
     }
     "puzzles-web" = {
+      # Update screenshot snapshots opens a pull request for them.
+      snapshot_prs    = true
       description     = "Web version of Puzzles: eight offline puzzle games in React and TypeScript"
       required_checks = ["build-and-test"]
       pages           = { build_type = "workflow" }
@@ -50,11 +52,15 @@ locals {
       required_checks = ["terraform"]
     }
     "cv" = {
+      # Update screenshot snapshots opens a pull request for them.
+      snapshot_prs    = true
       homepage_url    = "https://joclegg.github.io/cv/"
       required_checks = ["build-and-test"]
       pages           = { build_type = "workflow" }
     }
     "actions-dashboard" = {
+      # Update screenshot snapshots opens a pull request for them.
+      snapshot_prs    = true
       description     = "Every GitHub Actions run across a user's or organisation's repositories, on one page"
       homepage_url    = "https://actions.joclegg.dev/"
       required_checks = ["build-and-test"]
@@ -78,7 +84,7 @@ module "repository" {
   pages           = lookup(each.value, "pages", null)
 
   # update-submodules.yml merges each submodule move through a pull request.
-  actions_open_pull_requests = length(lookup(each.value, "submodules", [])) > 0
+  actions_open_pull_requests = length(lookup(each.value, "submodules", [])) > 0 || lookup(each.value, "snapshot_prs", false)
 }
 
 # puzzles-infra was renamed joclegg-infra, as it manages the whole account.
