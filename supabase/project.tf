@@ -24,6 +24,12 @@ locals {
 
 # The Puzzles Microsoft Entra ID app, from azure/. Its client secret is
 # replaced every 180 days, and the next run here picks up the new one.
+variable "apple_client_secret" {
+  description = "Apple's client secret for web sign-in, a JWT the workflow makes from the APPLE_SIGN_IN_KEY secret each run."
+  type        = string
+  sensitive   = true
+}
+
 data "tfe_outputs" "azure" {
   workspace = "joclegg-azure"
 }
@@ -75,10 +81,12 @@ resource "supabase_settings" "puzzles" {
     external_google_client_id = "173393208059-736edpatfv5vfdbvt8cm84lqujbp46im.apps.googleusercontent.com"
 
     # "Sign in with Apple", which App Store review requires alongside Google
-    # and Microsoft. The iPhone app signs in natively and hands Supabase
-    # Apple's ID token, which only needs the app's bundle ID here, no secret.
+    # and Microsoft. The first ID is the Services ID Android and web sign in
+    # through, with the secret; the iPhone app signs in natively and hands
+    # Supabase an ID token for its bundle ID, which needs no secret.
     external_apple_enabled   = true
-    external_apple_client_id = "com.joclegg.puzzles"
+    external_apple_client_id = "com.joclegg.puzzles.signin,com.joclegg.puzzles"
+    external_apple_secret    = var.apple_client_secret
 
     # "Sign in with Microsoft", for personal and work accounts.
     external_azure_enabled   = true

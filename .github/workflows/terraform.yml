@@ -118,6 +118,16 @@ jobs:
         with:
           workload_identity_provider: projects/173393208059/locations/global/workloadIdentityPools/github/providers/github
           service_account: terraform@puzzles-513020.iam.gserviceaccount.com
+      # supabase/ needs a fresh Apple client secret each run: Apple lets one
+      # last six months at most.
+      - if: matrix.root == 'supabase'
+        name: Make the Apple client secret
+        env:
+          APPLE_SIGN_IN_KEY: ${{ secrets.APPLE_SIGN_IN_KEY }}
+        run: |
+          secret=$(python3 -I ../.github/scripts/apple-client-secret.py)
+          echo "::add-mask::$secret"
+          echo "TF_VAR_apple_client_secret=$secret" >> "$GITHUB_ENV"
       - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: 1.17.1
