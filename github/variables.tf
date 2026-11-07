@@ -13,6 +13,13 @@ locals {
       PLAY_WORKLOAD_IDENTITY_PROVIDER = data.tfe_outputs.google.nonsensitive_values.workload_identity_provider
       PLAY_SERVICE_ACCOUNT            = data.tfe_outputs.google.nonsensitive_values.play_publisher_email
     }
+    "puzzles-ios" = {
+      # Only the key itself is secret. Apple made the key by hand in App Store
+      # Connect, so these come from there, not from another root.
+      APP_STORE_CONNECT_KEY_ID    = "ABTC5P8RWX"
+      APP_STORE_CONNECT_ISSUER_ID = "546b32cf-1a68-48f3-9223-570e2fe1fb93"
+      APPLE_TEAM_ID               = "6TATRT9BZQ"
+    }
   }
 
   actions_variable_list = merge([

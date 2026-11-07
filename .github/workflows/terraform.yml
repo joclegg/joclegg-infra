@@ -101,6 +101,7 @@ jobs:
       TF_VAR_PUZZLES_KEYSTORE_PASSWORD: ${{ matrix.root == 'github' && secrets.PUZZLES_KEYSTORE_PASSWORD || '' }}
       TF_VAR_PUZZLES_KEY_ALIAS: ${{ matrix.root == 'github' && secrets.PUZZLES_KEY_ALIAS || '' }}
       TF_VAR_PUZZLES_KEY_PASSWORD: ${{ matrix.root == 'github' && secrets.PUZZLES_KEY_PASSWORD || '' }}
+      TF_VAR_APP_STORE_CONNECT_API_KEY: ${{ matrix.root == 'github' && secrets.APP_STORE_CONNECT_API_KEY || '' }}
       TF_IN_AUTOMATION: 'true'
     defaults:
       run:
