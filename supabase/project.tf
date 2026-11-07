@@ -74,6 +74,12 @@ resource "supabase_settings" "puzzles" {
     external_google_enabled   = true
     external_google_client_id = "173393208059-736edpatfv5vfdbvt8cm84lqujbp46im.apps.googleusercontent.com"
 
+    # "Sign in with Apple", which App Store review requires alongside Google
+    # and Microsoft. The iPhone app signs in natively and hands Supabase
+    # Apple's ID token, which only needs the app's bundle ID here, no secret.
+    external_apple_enabled   = true
+    external_apple_client_id = "com.joclegg.puzzles"
+
     # "Sign in with Microsoft", for personal and work accounts.
     external_azure_enabled   = true
     external_azure_client_id = data.tfe_outputs.azure.nonsensitive_values.puzzles_client_id
