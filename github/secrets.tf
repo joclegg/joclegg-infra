@@ -29,6 +29,12 @@ variable "PUZZLES_KEY_PASSWORD" {
   sensitive = true
 }
 
+variable "APP_STORE_CONNECT_API_KEY" {
+  description = "The App Store Connect API key (.p8), base64-encoded, that puzzles-ios signs and uploads with."
+  type        = string
+  sensitive   = true
+}
+
 locals {
   # joclegg-infra reads its own copies, so it isn't listed.
   actions_secrets = {
@@ -37,6 +43,9 @@ locals {
       PUZZLES_KEYSTORE_PASSWORD = var.PUZZLES_KEYSTORE_PASSWORD
       PUZZLES_KEY_ALIAS         = var.PUZZLES_KEY_ALIAS
       PUZZLES_KEY_PASSWORD      = var.PUZZLES_KEY_PASSWORD
+    }
+    "puzzles-ios" = {
+      APP_STORE_CONNECT_API_KEY = var.APP_STORE_CONNECT_API_KEY
     }
     "puzzles-backend" = {
       SUPABASE_ACCESS_TOKEN = var.SUPABASE_ACCESS_TOKEN
