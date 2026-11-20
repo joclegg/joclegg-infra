@@ -1,6 +1,6 @@
 # Makes the client secret Supabase sends to Apple for web sign-in: a JWT
 # signed with the Sign in with Apple key. Apple caps its life at six months,
-# and the weekly run remakes it, so it never gets near expiring.
+# and supabase/ swaps in a new one monthly, so it never gets near expiring.
 import base64
 import json
 import os

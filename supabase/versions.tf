@@ -14,6 +14,10 @@ terraform {
       source  = "supabase/supabase"
       version = "~> 1.11"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.13"
+    }
     tfe = {
       source  = "hashicorp/tfe"
       version = "~> 0.70"
