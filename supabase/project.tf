@@ -22,14 +22,31 @@ locals {
   }
 }
 
-# The Puzzles Microsoft Entra ID app, from azure/. Its client secret is
-# replaced every 180 days, and the next run here picks up the new one.
 variable "apple_client_secret" {
   description = "Apple's client secret for web sign-in, a JWT the workflow makes from the APPLE_SIGN_IN_KEY secret each run."
   type        = string
   sensitive   = true
 }
 
+# The workflow makes a new Apple client secret every run, but every change to
+# the auth settings restarts Supabase's services, which can fail their health
+# check and fail the run. So the secret is kept in state and only swapped for
+# the newest one monthly, well inside its six-month life.
+resource "time_rotating" "apple_client_secret" {
+  rotation_days = 30
+}
+
+resource "terraform_data" "apple_client_secret" {
+  input = var.apple_client_secret
+
+  lifecycle {
+    ignore_changes       = [input]
+    replace_triggered_by = [time_rotating.apple_client_secret]
+  }
+}
+
+# The Puzzles Microsoft Entra ID app, from azure/. Its client secret is
+# replaced every 180 days, and the next run here picks up the new one.
 data "tfe_outputs" "azure" {
   workspace = "joclegg-azure"
 }
@@ -86,7 +103,7 @@ resource "supabase_settings" "puzzles" {
     # Supabase an ID token for its bundle ID, which needs no secret.
     external_apple_enabled   = true
     external_apple_client_id = "com.joclegg.puzzles.signin,com.joclegg.puzzles"
-    external_apple_secret    = var.apple_client_secret
+    external_apple_secret    = terraform_data.apple_client_secret.output
 
     # "Sign in with Microsoft", for personal and work accounts.
     external_azure_enabled   = true
